@@ -1,0 +1,28 @@
+window {
+    background-color: rgba(29, 32, 33, 0.9); /* Your soft dark grey */
+}
+
+button {
+    color: #ebdbb2; /* Light tan text */
+    background-color: #3c3836; /* Softer grey for buttons */
+    outline-style: none;
+    border: 2px solid #689d6a; /* That soft green from your swaylock */
+    border-radius: 10px;
+    margin: 20px;
+    background-repeat: no-repeat;
+    background-position: center 35%;
+    background-size: 150px;
+}
+
+button:focus, button:active, button:hover {
+    background-color: #689d6a; /* Soft green highlight */
+    color: #1d2021; /* Dark text on highlight */
+}
+
+/* Fix for icons - ensure these paths exist on Fedora */
+#lock { background-image: url("/usr/share/wlogout/icons/lock.png"); }
+#logout { background-image: url("/usr/share/wlogout/icons/logout.png"); }
+#suspend { background-image: url("/usr/share/wlogout/icons/suspend.png"); }
+#hibernate { background-image: url("/usr/share/wlogout/icons/hibernate.png"); }
+#shutdown { background-image: url("/usr/share/wlogout/icons/shutdown.png"); }
+#reboot { background-image: url("/usr/share/wlogout/icons/reboot.png"); }

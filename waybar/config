@@ -1,0 +1,72 @@
+    {
+    "layer": "top",
+    "position": "top",
+    "height": 36,
+    "spacing": 6,
+    
+    "modules-left": ["sway/workspaces", "sway/mode"],
+    "modules-center": ["clock"],
+    "modules-right": ["network#wifi", "network#eth", "pulseaudio", "battery", "custom/session"],
+
+    "sway/workspaces": {
+        "disable-scroll": true,
+        "all-outputs": true,
+        "format": "{name}",
+        "onclick": "activate",
+    },
+
+    "clock": {
+        "format": " {:%a %d %b  %H:%M}",
+        "tooltip": false
+    },
+
+    "battery": {
+        "interval": 30,
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{icon} {capacity}%",
+        "format-charging": " {capacity}%",
+        "format-plugged": " {capacity}%",
+        "format-alt": "{icon} {time}",
+        "format-icons": ["", "", "", "", ""]
+    },
+
+    "pulseaudio": {
+        "format": "{icon} {volume}%",
+        "format-muted": " muted",
+        "format-icons": {
+            "headphone": "",
+            "hands-free": "",
+            "headset": "",
+            "phone": "",
+            "portable": "",
+            "car": "",
+            "default": ["", "", ""]
+        },
+        "scroll-step": 5,
+        "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle"
+    },
+
+    "network#wifi": {
+        "interface": "wlp4s0",
+        "interval": 2,
+        "format-wifi": " {bandwidthUpBytes}  {bandwidthDownBytes}   {essid}",
+        "format-disconnected": "⚠ Disconnected",
+        "tooltip": false
+    },
+    "network#eth": {
+        "interface": "enp3s0",
+        "interval": 2,
+        "format-ethernet": " eth  {bandwidthUpBytes}  {bandwidthDownBytes}",
+        "format-disconnected": "",
+        "tooltip": false
+    },
+
+    "custom/session": {
+        "format": "",
+        "on-click": "wlogout -b 2",
+        "tooltip": false
+    }
+}

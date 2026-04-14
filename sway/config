@@ -1,0 +1,116 @@
+### Variables
+set $mod Mod4
+set $left h
+set $down j
+set $up k
+set $right l
+set $term foot
+set $menu fuzzel
+set $lock_cmd swaylock
+
+### Gruvbox Colors
+set $bg      #1d2021
+set $gray    #928374
+set $green   #689d6a
+set $red     #fb4934
+set $yellow  #d79921
+set $text    #ebdbb2
+
+### Output configuration
+output * bg "/home/andrew/Images/Wallpapers/coding-2.png" fill
+
+### Spacing & Window Rules
+default_border pixel 3 
+default_floating_border pixel 2
+smart_gaps off 
+hide_edge_borders none 
+gaps inner 12
+gaps outer 0
+gaps top 0
+
+# Force the power menu to stay on top and centered
+for_window [app_id="pwr_menu"] {
+    floating enable
+    sticky enable
+    border pixel 3
+    resize set 400 250
+    move position center
+}
+
+### Key bindings
+### Basics
+bindsym $mod+Return exec $term 
+bindsym $mod+Shift+q kill
+bindsym $mod+d exec $menu
+floating_modifier $mod normal 
+
+### Reload Sway and Waybar
+bindsym $mod+Shift+c reload; 
+
+### Swaylock (Standard)
+bindsym $mod+escape exec $lock_cmd
+### Power menu keybinding
+
+bindsym $mod+Shift+e exec wlogout -b 2
+
+### Navigation (Vim-style)
+bindsym $mod+$left focus left 
+bindsym $mod+$down focus down 
+bindsym $mod+$up focus up 
+bindsym $mod+$right focus right 
+
+### Moving windows
+bindsym $mod+Shift+$left move left 
+bindsym $mod+Shift+$down move down 
+bindsym $mod+Shift+$up move up 
+bindsym $mod+Shift+$right move right 
+
+### The same but with arrow keys
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+
+### Workspace
+bindsym $mod+1 workspace number 1 
+bindsym $mod+2 workspace number 2 
+bindsym $mod+3 workspace number 3 
+bindsym $mod+4 workspace number 4 
+bindsym $mod+5 workspace number 5 
+bindsym $mod+Shift+1 move container to workspace number 1 
+bindsym $mod+Shift+2 move container to workspace number 2 
+bindsym $mod+Shift+3 move container to workspace number 3 
+bindsym $mod+Shift+4 move container to workspace number 4 
+bindsym $mod+Shift+5 move container to workspace number 5 
+
+### Layout & Multimedia
+bindsym $mod+f fullscreen 
+bindsym $mod+Shift+space floating toggle
+bindsym --locked XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle 
+bindsym --locked XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5% 
+bindsym --locked XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5% 
+
+# Special keys to adjust brightness via brightnessctl
+bindsym --locked XF86MonBrightnessDown exec brightnessctl set 5%-
+bindsym --locked XF86MonBrightnessUp exec brightnessctl set 5%+
+
+
+### Appearance (Colors)
+
+### class                 border  backgr. text    indicator child_border
+client.focused          $green  $green  $bg     $green    $green 
+client.unfocused        $gray   $bg     $gray   $bg       $bg 
+client.focused_inactive $bg     $bg     $gray   $bg       $bg 
+client.urgent           $red    $red    $text   $red      $red 
+
+
+### Autostart
+exec_always "pkill waybar; waybar"
+exec swayidle -w timeout 600 'swaylock' before-sleep 'swaylock' 
+
+include /etc/sway/config.d/*

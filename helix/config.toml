@@ -1,0 +1,12 @@
+
+# Tell Helix to use your custom theme file
+theme = "my-gruvbox"
+
+[editor]
+line-number = "relative"
+cursorline = true
+color-modes = true
+
+[editor.cursor-shape]
+insert = "bar"
+normal = "block"

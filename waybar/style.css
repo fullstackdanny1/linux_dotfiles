@@ -1,0 +1,51 @@
+/* Gruvbox Color Palette */
+@define-color bg #1d2021;
+@define-color fg #ebdbb2;
+@define-color yellow #fabd2f;
+@define-color red #fb4934;
+@define-color green #b8bb26;
+@define-color aqua #8ec07c;
+@define-color gray #928374;
+
+* {
+    border: none;
+    border-radius: 0;
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 15px;
+}
+
+window#waybar {
+    /* Use a solid hex code (no transparency) */
+    background-color: #1d2021; 
+    color: #ebdbb2;
+    transition-property: background-color;
+    transition-duration: .5s;
+}
+
+#workspaces button {
+    padding: 0 5px;
+    color: @gray;
+}
+
+#workspaces button.focused {
+    color: #689d6a;
+    border-bottom: 3px solid #689d6a;
+}
+
+#workspaces button.urgent {
+    color: @red;
+}
+
+#clock, #battery, #pulseaudio, #network, #custom-session {
+    padding: 0 10px;
+}
+
+#workspaces, #clock, #battery, #pulseaudio, #network {
+    padding: 0 10px;
+    background: transparent; /* This keeps individual modules clean */
+}
+
+#battery { color: @green; }
+#pulseaudio { color: @aqua; }
+#network { color: @yellow; }
+#custom-session { color: @red; }

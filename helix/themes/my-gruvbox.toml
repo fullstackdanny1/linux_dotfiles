@@ -1,0 +1,14 @@
+inherits = "gruvbox_dark_hard"
+
+# The "Invisible" background
+"ui.background" = { bg = "none" }
+"ui.virtual.whitespace" = { fg = "#3c3836" } # Keeps dots/space indicators subtle
+
+# Optional: Make the "gutter" (where line numbers are) transparent too
+"ui.linenr" = { fg = "#7c6f64", bg = "none" }
+"ui.linenr.selected" = { fg = "#689d6a", bg = "none", modifiers = ["bold"] }
+
+# Keep your soft green for the UI elements that actually need a background
+"ui.statusline" = { fg = "#ebdbb2", bg = "#3c3836" }
+"ui.menu" = { fg = "#ebdbb2", bg = "#282828" }
+"ui.menu.selected" = { fg = "#1d2021", bg = "#689d6a" }
