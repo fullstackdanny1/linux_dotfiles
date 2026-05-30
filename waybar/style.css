@@ -5,6 +5,7 @@
 @define-color red #fb4934;
 @define-color green #b8bb26;
 @define-color aqua #8ec07c;
+@define-color blue #83a598;
 @define-color gray #928374;
 
 * {
@@ -16,7 +17,7 @@
 
 window#waybar {
     /* Use a solid hex code (no transparency) */
-    background-color: #1d2021; 
+    background-color: alpha(#262626, 0); 
     color: #ebdbb2;
     transition-property: background-color;
     transition-duration: .5s;
@@ -36,16 +37,30 @@ window#waybar {
     color: @red;
 }
 
-#clock, #battery, #pulseaudio, #network, #custom-session {
+#workspaces, #clock, #battery, #pulseaudio, #network, #custom-session {
     padding: 0 10px;
 }
 
-#workspaces, #clock, #battery, #pulseaudio, #network {
-    padding: 0 10px;
-    background: transparent; /* This keeps individual modules clean */
+#network { 
+    color: @blue; /* Wifi / Ethernet -> Blue */
 }
 
-#battery { color: @green; }
-#pulseaudio { color: @aqua; }
-#network { color: @yellow; }
-#custom-session { color: @red; }
+#network.eth {
+    color: @blue;
+}
+
+#pulseaudio { 
+    color: @green; /* Volume -> Light Green */
+}
+
+#battery { 
+    color: @yellow; /* Battery -> Yellow */
+}
+
+#battery.critical:not(.charging) {
+    color: @red; /* Changes text to red only if battery is critical */
+}
+
+#custom-session { 
+    color: @red; /* Session exit text -> Red */
+}

@@ -11,6 +11,7 @@ set $lock_cmd swaylock
 ### Gruvbox Colors
 set $bg      #1d2021
 set $gray    #928374
+set $dark_gray #262626
 set $green   #689d6a
 set $red     #fb4934
 set $yellow  #d79921
@@ -19,23 +20,6 @@ set $text    #ebdbb2
 ### Output configuration
 output * bg "/home/andrew/Images/Wallpapers/coding-2.png" fill
 
-### Spacing & Window Rules
-default_border pixel 3 
-default_floating_border pixel 2
-smart_gaps off 
-hide_edge_borders none 
-gaps inner 12
-gaps outer 0
-gaps top 0
-
-# Force the power menu to stay on top and centered
-for_window [app_id="pwr_menu"] {
-    floating enable
-    sticky enable
-    border pixel 3
-    resize set 400 250
-    move position center
-}
 
 ### Key bindings
 ### Basics
@@ -49,15 +33,25 @@ bindsym $mod+Shift+c reload;
 
 ### Swaylock (Standard)
 bindsym $mod+escape exec $lock_cmd
-### Power menu keybinding
 
-bindsym $mod+Shift+e exec wlogout -b 2
+### Power menu keybinding
+bindsym $mod+Shift+e exec swaylock
+
+### Firefox
+bindsym $mod+Shift+f exec firefox
 
 ### Navigation (Vim-style)
 bindsym $mod+$left focus left 
 bindsym $mod+$down focus down 
 bindsym $mod+$up focus up 
 bindsym $mod+$right focus right 
+
+### Split windows directions
+# Binds to split horizontally ($mod + b)
+bindsym $mod+b splith
+
+# Binds to split vertically ($mod + v)
+bindsym $mod+v splitv
 
 ### Moving windows
 bindsym $mod+Shift+$left move left 
@@ -100,14 +94,44 @@ bindsym --locked XF86MonBrightnessDown exec brightnessctl set 5%-
 bindsym --locked XF86MonBrightnessUp exec brightnessctl set 5%+
 
 
+### Spacing & Window Rules
+default_border pixel 2
+smart_gaps off
+
+gaps inner 10
+gaps outer 0
+gaps top -4
+
 ### Appearance (Colors)
 
-### class                 border  backgr. text    indicator child_border
+### class               border  backgr. text    indicator child_border
 client.focused          $green  $green  $bg     $green    $green 
-client.unfocused        $gray   $bg     $gray   $bg       $bg 
-client.focused_inactive $bg     $bg     $gray   $bg       $bg 
+client.unfocused        $gray   $bg     $gray   $bg       $gray 
+client.focused_inactive $gray   $bg     $gray   $bg       $gray 
 client.urgent           $red    $red    $text   $red      $red 
 
+### swaybar
+# Use instead of waybar for more minimal setups
+#bar {
+#    position top
+#    font pango:JetBrainsMono Nerd Font 11
+    
+    # Keeps everything left-aligned next to workspaces
+#    pango_markup enabled
+
+#    status_command while ~/.config/sway/swaybar/status.sh; do sleep 2; done
+
+#    colors {
+#        background #1d2021
+#        statusline #ebdbb2
+#        separator  #928374
+
+#        focused_workspace  #1d2021 #1d2021 #689d6a
+#        active_workspace   #1d2021 #1d2021 #928374
+#        inactive_workspace #1d2021 #1d2021 #928374
+#        urgent_workspace   #1d2021 #1d2021 #fb4934
+#    }
+#}
 
 ### Autostart
 exec_always "pkill waybar; waybar"

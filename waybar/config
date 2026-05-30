@@ -1,10 +1,10 @@
     {
     "layer": "top",
     "position": "top",
-    "height": 36,
-    "spacing": 6,
+    "height": 30,
+    "spacing": 0,
     
-    "modules-left": ["sway/workspaces", "sway/mode"],
+    "modules-left": ["sway/workspaces"],
     "modules-center": ["clock"],
     "modules-right": ["network#wifi", "network#eth", "pulseaudio", "battery", "custom/session"],
 
@@ -52,14 +52,14 @@
     "network#wifi": {
         "interface": "wlp4s0",
         "interval": 2,
-        "format-wifi": " {bandwidthUpBytes}  {bandwidthDownBytes}   {essid}",
+        "format-wifi": " {essid}",
         "format-disconnected": "⚠ Disconnected",
         "tooltip": false
     },
     "network#eth": {
         "interface": "enp3s0",
         "interval": 2,
-        "format-ethernet": " eth  {bandwidthUpBytes}  {bandwidthDownBytes}",
+        "format-ethernet": " eth",
         "format-disconnected": "",
         "tooltip": false
     },
