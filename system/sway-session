@@ -1,0 +1,34 @@
+#!/bin/sh
+# Pornește sway (sau swayfx) cu profilul Nix + home-manager în mediu, ca sway
+# să găsească utilitarele instalate prin Nix. Folosit de greeter (greetd).
+# shellcheck disable=SC1090,SC1091
+
+[ -f /etc/profile ] && . /etc/profile
+
+for nix_sh in \
+  /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh \
+  "$HOME/.nix-profile/etc/profile.d/nix.sh"; do
+  if [ -f "$nix_sh" ]; then . "$nix_sh"; break; fi
+done
+
+for profile in "$HOME/.nix-profile" "${XDG_STATE_HOME:-$HOME/.local/state}/nix/profiles/home-manager/home-path"; do
+  [ -d "$profile" ] || continue
+  hm_vars="$profile/etc/profile.d/hm-session-vars.sh"
+  [ -f "$hm_vars" ] && . "$hm_vars"
+  case ":$PATH:" in *":$profile/bin:"*) ;; *) PATH="$profile/bin:$PATH" ;; esac
+  case ":${XDG_DATA_DIRS:-}:" in
+    *":$profile/share:"*) ;;
+    *) XDG_DATA_DIRS="$profile/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}" ;;
+  esac
+done
+
+export PATH XDG_DATA_DIRS
+export XDG_CURRENT_DESKTOP=sway
+export XDG_SESSION_DESKTOP=sway
+export XDG_SESSION_TYPE=wayland
+export MOZ_ENABLE_WAYLAND=1
+
+if command -v systemd-cat >/dev/null; then
+  exec systemd-cat --identifier=sway sway "$@"
+fi
+exec sway "$@"
