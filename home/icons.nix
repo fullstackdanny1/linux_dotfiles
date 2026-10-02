@@ -1,0 +1,45 @@
+# Glife Nerd Font (JetBrainsMono Nerd Font). Generat cu python, codepoint-urile sunt în comentarii.
+{
+  wifi = "󰖩"; # U+F05A9
+  wifiOff = "󰖪"; # U+F05AA
+  wifi1 = "󰤟"; # U+F091F
+  wifi2 = "󰤢"; # U+F0922
+  wifi3 = "󰤥"; # U+F0925
+  wifi4 = "󰤨"; # U+F0928
+  ethernet = "󰈀"; # U+F0200
+  bluetooth = "󰂯"; # U+F00AF
+  bluetoothOff = "󰂲"; # U+F00B2
+  bluetoothConnected = "󰂱"; # U+F00B1
+  volLow = "󰕿"; # U+F057F
+  volMid = "󰖀"; # U+F0580
+  volHigh = "󰕾"; # U+F057E
+  volMute = "󰝟"; # U+F075F
+  headphones = "󰋋"; # U+F02CB
+  bat10 = "󰁺"; # U+F007A
+  bat30 = "󰁼"; # U+F007C
+  bat50 = "󰁾"; # U+F007E
+  bat70 = "󰂀"; # U+F0080
+  bat90 = "󰂂"; # U+F0082
+  batFull = "󰁹"; # U+F0079
+  batCharging = "󰂄"; # U+F0084
+  batPlugged = "󰚥"; # U+F06A5
+  power = "󰐥"; # U+F0425
+  reboot = "󰜉"; # U+F0709
+  suspend = "󰤄"; # U+F0904
+  logout = "󰍃"; # U+F0343
+  lock = "󰌾"; # U+F033E
+  music = "󰝚"; # U+F075A
+  play = "󰐊"; # U+F040A
+  pause = "󰏤"; # U+F03E4
+  timer = "󰔛"; # U+F051B
+  clock = "󰅐"; # U+F0150
+  calendar = "󰃭"; # U+F00ED
+  keyboard = "󰌌"; # U+F030C
+  bell = "󰂚"; # U+F009A
+  bellOff = "󰂛"; # U+F009B
+  night = "󰖔"; # U+F0594
+  speed = "󰓅"; # U+F04C5
+  monitor = "󰍹"; # U+F0379
+  stop = "󰓛"; # U+F04DB
+  list = "󰉹"; # U+F0279
+}
