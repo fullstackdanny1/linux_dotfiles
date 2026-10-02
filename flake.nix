@@ -26,8 +26,8 @@
 
       # Schimbă aici dacă userul diferă pe laptopuri.
       user = {
-        name = "andrew";
-        home = "/home/andrew";
+        name = "andrew123";
+        home = "/home/andrew123";
       };
 
       mkHome =
