@@ -27,7 +27,10 @@ in
     lockProcess = "gtklock";
     notifyOnUnlock = true;
     scale = 1.0; # ajustează pentru ecranul laptopului principal
-    gaps = 8;
+    gaps = {
+      inner = 14;
+      outer = 6;
+    };
 
     scripts = {
       gtklock-run = mkScript { name = "gtklock-run"; };
@@ -115,7 +118,7 @@ in
       #   blur enable
       #   layer_effects "waybar" blur enable
       corner_radius ${r}
-      smart_corner_radius enable
+      smart_corner_radius disable
       shadows enable
       shadows_on_csd disable
       shadow_blur_radius 16

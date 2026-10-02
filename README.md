@@ -19,7 +19,8 @@ flake.nix               homeConfigurations.{main,second} + packages.system-{main
 install.sh              instalare: pachete din sistem, /etc/greetd, servicii, home-manager
 home/
   theme.nix             paleta (Gruvbox dark hard), accent, font, rază, cursor, wallpaper
-  common.nix            pachete, shell + aliasuri, editoare, foot, fuzzel, mpd, syncthing, Stylix
+  common.nix            pachete, bash + prompt (starship), aliasuri, helix, zellij, foot, fuzzel,
+                        mpd, syncthing, Stylix
   sway-common.nix       input, keybinds, reguli de ferestre, wallpaper, lid, scratchpad
   main.nix              SwayFX, waybar, gtklock, mako, swayosd, idle, capturi, gammastep, kanshi
   second.nix            swaybar + i3status, swaylock, idle
@@ -80,7 +81,7 @@ ca aplicațiile din Nix care folosesc GPU-ul (satty, swayosd) să găsească dri
 | `swaylock-effects` | COPR | AUR |
 
 Fără `swaylock-effects`, pune `swaylockEffects = false;` în `home/second.nix`
-(swaylock simplu nu cunoaște opțiunile de blur / ceas).
+(swaylock simplu nu cunoaște opțiunile de blur / ceas; wallpaper-ul rămâne, fără blur).
 
 ## Taste
 
@@ -116,9 +117,21 @@ Volum, luminozitate și media merg și pe lock screen.
 |---|---|
 | `wifi` / `bt` / `audio` | impala / bluetui / wiremix |
 | `sysmon` | btop |
+| `zj` | zellij (se atașează la sesiunea `main` sau o creează) |
 | `track [proiect]` | pornește timerul (implicit: numele repo-ului git curent) |
 | `untrack` / `retrack` | oprește / reia timerul |
 | `off`, `reboot`, `sleep`, `logout`, `lock` | acțiuni de sesiune (`sleep 5` rămâne comanda obișnuită) |
+
+## Prompt
+
+Starship, pe două rânduri, cu săgeată îndoită; `❯` devine roșu după o comandă eșuată:
+
+```
+╭─  user 󰌢 laptop  󰉋 ~/linux_dotfiles   main 󰔛 3s
+╰─❯
+```
+
+Se configurează în `programs.starship` din `home/common.nix`.
 
 ## Time tracking
 
@@ -142,7 +155,8 @@ Lock înainte de suspend pe ambele.
 ## Per laptop
 
 În `home/main.nix` / `home/second.nix`: `dotfiles.scale` (scalarea ecranului),
-`dotfiles.laptopOutput` (implicit `eDP-1`), `dotfiles.gaps`. Pe `main`, profilurile
+`dotfiles.laptopOutput` (implicit `eDP-1`), `dotfiles.gaps.inner` (între ferestre) și
+`dotfiles.gaps.outer` (față de marginea ecranului) — există și când e o singură fereastră. Pe `main`, profilurile
 kanshi și orele pentru night light (`services.gammastep`) sunt tot acolo.
 
 ## Wallpaper

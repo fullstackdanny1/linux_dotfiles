@@ -6,6 +6,7 @@
   lib,
   pkgs,
   theme,
+  icons,
   ...
 }:
 let
@@ -15,8 +16,11 @@ let
   mod = "Mod4";
   c = theme.scheme;
   hash = x: "#${x}";
+  # iconiță colorată (pango) pentru blocurile din swaybar
+  icon = color: glyph: "<span color='#${color}'>${glyph}</span>";
 
-  # false dacă distribuția are doar swaylock simplu (fără blur / ceas).
+  # false dacă distribuția are doar swaylock simplu (fără blur / ceas);
+  # wallpaper-ul rămâne, doar fără blur.
   swaylockEffects = true;
 in
 {
@@ -26,7 +30,10 @@ in
     lockProcess = "swaylock";
     notifyOnUnlock = false; # timerul se reia din terminal: `retrack`
     scale = 1.0; # ajustează pentru ecranul laptopului secundar
-    gaps = 4;
+    gaps = {
+      inner = 10;
+      outer = 4;
+    };
 
     scripts.swaybar-status = mkScript {
       name = "swaybar-status";
@@ -37,8 +44,10 @@ in
       ];
       env = {
         I3STATUS_CONFIG = "${config.xdg.configHome}/i3status/config";
-        ACCENT = hash theme.accent;
-        MUTED = hash theme.muted;
+        TIMER_ICON = icons.timer;
+        TIMER_COLOR = hash theme.accent;
+        LAYOUT_ICON = icons.keyboard;
+        LAYOUT_COLOR = hash theme.muted;
       };
     };
   };
@@ -63,6 +72,7 @@ in
       {
         position = "top";
         statusCommand = exe "swaybar-status";
+        command = "swaybar"; # cel din sistem, ca sway
         fonts = {
           names = [ theme.font.name ];
           size = theme.font.size + 0.0;
@@ -70,12 +80,13 @@ in
         trayOutput = "none";
         extraConfig = ''
           status_padding 4
-          status_edge_padding 8
+          status_edge_padding 12
+          separator_symbol "│"
         '';
         colors = {
           background = "${hash theme.bg}00"; # transparent
           statusline = hash theme.fg;
-          separator = hash theme.muted;
+          separator = hash c.base02;
           focusedWorkspace = {
             border = hash theme.accent;
             background = hash theme.accent;
@@ -106,37 +117,35 @@ in
     ];
   };
 
+  # Fiecare modul: iconiță colorată + valoare, separate de swaybar cu „│”.
   programs.i3status = {
     enable = true;
     enableDefault = false;
     general = {
       output_format = "i3bar";
-      colors = true;
-      color_good = hash c.base0D;
-      color_degraded = hash c.base0A;
-      color_bad = hash c.base08;
+      markup = "pango";
+      colors = false; # culorile vin din iconițe
       interval = 2;
-      separator = "";
     };
     modules = {
       "wireless _first_" = {
         position = 1;
         settings = {
-          format_up = "wifi %essid";
-          format_down = "wifi off";
+          format_up = "${icon c.base0D icons.wifi} %essid";
+          format_down = "${icon theme.muted icons.wifiOff} off";
         };
       };
       "volume master" = {
         position = 2;
         settings = {
-          format = "vol %volume";
-          format_muted = "vol mute";
+          format = "${icon c.base0B icons.volHigh} %volume";
+          format_muted = "${icon theme.muted icons.volMute} mute";
           device = "pulse";
         };
       };
       "tztime local" = {
         position = 3;
-        settings.format = "%a %d %b  %H:%M";
+        settings.format = "${icon c.base0A icons.clockOutline} %a %d %b  %H:%M";
       };
     };
   };
@@ -147,8 +156,8 @@ in
     ignore-empty-password
     show-failed-attempts
     font=${theme.font.name}
-    indicator-radius=90
-    indicator-thickness=6
+    indicator-radius=135
+    indicator-thickness=8
     color=${theme.bg}
     inside-color=${theme.bg}cc
     inside-clear-color=${theme.bg}cc
@@ -170,8 +179,11 @@ in
     text-ver-color=${theme.fg}
     text-wrong-color=${c.base08}
   ''
+  + lib.optionalString theme.hasWallpaper ''
+    image=${theme.wallpaper}
+    scaling=fill
+  ''
   + lib.optionalString swaylockEffects ''
-    screenshots
     effect-blur=8x3
     effect-vignette=0.5:0.6
     clock

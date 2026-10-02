@@ -42,4 +42,10 @@
   monitor = "󰍹"; # U+F0379
   stop = "󰓛"; # U+F04DB
   list = "󰉹"; # U+F0279
+  user = ""; # U+F007
+  laptop = "󰌢"; # U+F0322
+  folder = "󰉋"; # U+F024B
+  gitBranch = ""; # U+E725
+  nix = ""; # U+F313
+  clockOutline = "󰥔"; # U+F0954
 }
