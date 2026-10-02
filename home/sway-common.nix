@@ -50,9 +50,17 @@ in
       default = 1.0;
       description = "Scalarea ecranului laptopului.";
     };
-    gaps = mkOption {
-      type = types.int;
-      default = 6;
+    gaps = {
+      inner = mkOption {
+        type = types.int;
+        default = 12;
+        description = "Spațiul dintre ferestre.";
+      };
+      outer = mkOption {
+        type = types.int;
+        default = 4;
+        description = "Spațiul suplimentar față de marginea ecranului.";
+      };
     };
     scripts = mkOption {
       type = types.attrsOf types.package;
@@ -169,9 +177,10 @@ in
           titlebar = false;
           modifier = mod;
         };
+        # Margini și când e o singură fereastră pe workspace.
         gaps = {
-          inner = cfg.gaps;
-          smartGaps = true; # dispar când e o singură fereastră
+          inherit (cfg.gaps) inner outer;
+          smartGaps = false;
         };
         workspaceAutoBackAndForth = true;
         focus.wrapping = "no";

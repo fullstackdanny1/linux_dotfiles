@@ -1,4 +1,4 @@
-# Comun pe ambele laptopuri: pachete, shell, editoare, terminal, launcher,
+# Comun pe ambele laptopuri: pachete, shell + prompt, editor, zellij, terminal, launcher,
 # TUI-uri, muzică, time tracking, aliasuri și tema (Stylix).
 {
   config,
@@ -6,6 +6,7 @@
   pkgs,
   user,
   theme,
+  icons,
   ...
 }:
 {
@@ -103,7 +104,7 @@
       foot.enable = true;
       fuzzel.enable = true;
       btop.enable = true;
-      neovim.enable = true;
+      zellij.enable = true;
     };
   };
 
@@ -122,6 +123,7 @@
       track = "timer start";
       untrack = "timer stop";
       retrack = "timer continue";
+      zj = "zellij attach --create main";
       off = "session off";
       reboot = "session reboot";
       logout = "session logout";
@@ -133,6 +135,75 @@
         if [ $# -eq 0 ]; then session suspend; else command sleep "$@"; fi
       }
     '';
+  };
+
+  # Prompt pe două rânduri, cu săgeată îndoită:
+  #   ╭─  andrew 󰌢 laptop  󰉋 ~/linux_dotfiles   main 󰔛 3s
+  #   ╰─❯
+  programs.starship = {
+    enable = true;
+    enableBashIntegration = true;
+    settings =
+      let
+        c = theme.scheme;
+        frame = "fg:#${c.base03}";
+      in
+      {
+        add_newline = true;
+        format = lib.concatStrings [
+          "[╭─](${frame}) "
+          "$username"
+          "$hostname"
+          "$directory"
+          "$git_branch"
+          "$git_state"
+          "$git_status"
+          "$nix_shell"
+          "$cmd_duration"
+          "$line_break"
+          "[╰─](${frame})"
+          "$character"
+        ];
+        username = {
+          show_always = true;
+          format = "[${icons.user} $user]($style) ";
+          style_user = "bold fg:#${theme.accent}";
+          style_root = "bold fg:#${c.base08}";
+        };
+        hostname = {
+          ssh_only = false;
+          format = "[${icons.laptop} $hostname]($style)  ";
+          style = "fg:#${theme.muted}";
+        };
+        directory = {
+          format = "[${icons.folder} $path]($style)[$read_only]($read_only_style) ";
+          style = "bold fg:#${c.base0D}";
+          truncation_length = 3;
+          truncation_symbol = "…/";
+          read_only = " ${icons.lock}";
+        };
+        git_branch = {
+          format = " [${icons.gitBranch} $branch]($style) ";
+          style = "fg:#${c.base0E}";
+        };
+        git_status = {
+          format = "([$all_status$ahead_behind]($style) )";
+          style = "fg:#${c.base0A}";
+        };
+        nix_shell = {
+          format = "[${icons.nix} $name]($style) ";
+          style = "fg:#${c.base0C}";
+        };
+        cmd_duration = {
+          min_time = 2000;
+          format = "[${icons.timer} $duration]($style) ";
+          style = "fg:#${theme.muted}";
+        };
+        character = {
+          success_symbol = "[❯](bold fg:#${theme.accent})";
+          error_symbol = "[❯](bold fg:#${c.base08})";
+        };
+      };
   };
 
   programs.git.enable = true;
@@ -185,15 +256,28 @@
     };
   };
 
-  programs.neovim = {
-    enable = true;
-    viAlias = true;
-    vimAlias = true;
-  };
-
   programs.btop = {
     enable = true;
     settings.vim_keys = true;
+  };
+
+  # ---------------------------------------------------------------- multiplexer
+  programs.zellij = {
+    enable = true;
+    # Nu pornește automat în fiecare shell; `zj` când e nevoie.
+    enableBashIntegration = false;
+    settings = {
+      default_layout = "compact";
+      pane_frames = false;
+      simplified_ui = false;
+      show_startup_tips = false;
+      show_release_notes = false;
+      copy_command = "wl-copy";
+      copy_on_select = true;
+      mouse_mode = true;
+      scroll_buffer_size = 10000;
+      ui.pane_frames.rounded_corners = true;
+    };
   };
 
   # ---------------------------------------------------------------- terminal
