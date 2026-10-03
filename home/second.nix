@@ -60,8 +60,6 @@ in
   wayland.windowManager.sway.config = {
     # Direcția split-ului: latura unde apare următoarea fereastră (dreapta pentru
     # splith, jos pentru splitv) e într-un verde mai deschis decât bordura.
-    colors.focused.indicator = lib.mkForce (hash c.base0B);
-
     keybindings = {
       "${mod}+x" = "exec ${exe "power-menu"}";
 
@@ -92,10 +90,11 @@ in
           background = "${hash theme.bg}00"; # transparent
           statusline = hash theme.fg;
           separator = hash c.base02;
+          # doar cifra colorată, fără dreptunghi
           focusedWorkspace = {
-            border = hash theme.accent;
-            background = hash theme.accent;
-            text = hash theme.bg;
+            border = "${hash theme.bg}00";
+            background = "${hash theme.bg}00";
+            text = hash theme.accent;
           };
           activeWorkspace = {
             border = "${hash theme.bg}00";
@@ -108,9 +107,9 @@ in
             text = hash theme.muted;
           };
           urgentWorkspace = {
-            border = hash c.base08;
-            background = hash c.base08;
-            text = hash theme.fg;
+            border = "${hash theme.bg}00";
+            background = "${hash theme.bg}00";
+            text = hash c.base08;
           };
           bindingMode = {
             border = hash c.base0A;

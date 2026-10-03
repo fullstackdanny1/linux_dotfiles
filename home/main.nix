@@ -163,6 +163,12 @@ in
         disable-scroll = true;
         all-outputs = true;
         format = "{name}";
+        # 1–3 apar mereu, chiar goale
+        persistent-workspaces = {
+          "1" = [ ];
+          "2" = [ ];
+          "3" = [ ];
+        };
       };
 
       "sway/mode".format = "{}";
@@ -295,18 +301,27 @@ in
         padding: 0 8px;
         color: #${theme.muted};
         background: transparent;
-        border-radius: ${r}px;
-        box-shadow: none;
+        border-radius: 0;
+        box-shadow: inset 0 -2px transparent;
       }
 
       #workspaces button:hover {
-        background: #${c.base01};
+        background: transparent;
+        color: #${theme.fg};
       }
 
-      #workspaces button.focused {
-        color: #${theme.bg};
-        background: #${theme.accent};
+      /* workspace-urile persistente goale, mai estompate */
+      #workspaces button.persistent {
+        color: #${c.base03};
       }
+
+      /* doar cifra colorată + o linie sub ea, fără dreptunghi */
+      #workspaces button.focused {
+        color: #${theme.accent};
+        background: transparent;
+        box-shadow: inset 0 -2px #${theme.accent};
+      }
+
 
       #workspaces button.urgent {
         color: #${c.base08};
