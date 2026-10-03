@@ -97,7 +97,7 @@ Fără `swaylock-effects`, pune `swaylockEffects = false;` în `home/second.nix`
 | `Super+Shift+e` | logout (cu confirmare) |
 | `Super+Space` | US ⇄ RO |
 | `Super+h/j/k/l` | focus; cu `Shift` mută fereastra |
-| `Super+1…0` | workspace (din nou pe același = înapoi la anteriorul) |
+| `Super+1…0` | workspace (apăsat din nou sau ținut apăsat rămâne pe el) |
 | `Super+b` / `Super+v` | split orizontal / vertical |
 | `Super+s` / `Super+w` / `Super+e` | stacking / tabbed / toggle split |
 | `Super+f` | fullscreen |

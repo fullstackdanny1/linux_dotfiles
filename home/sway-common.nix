@@ -14,9 +14,9 @@ let
   mod = "Mod4";
   hash = c: "#${c}";
 
-  workspaces = lib.genList (i: toString (i + 1)) 10;
-  # tasta 0 → workspace 10
-  wsKey = ws: if ws == "10" then "0" else ws;
+  # 1–9 în keybindings; 10 (tasta 0) în extraConfig: home-manager sortează tastele
+  # alfabetic, iar sway pornește pe primul workspace din config — altfel ar fi 10.
+  workspaces = lib.genList (i: toString (i + 1)) 9;
 in
 {
   options.dotfiles = with lib; {
@@ -182,7 +182,8 @@ in
           inherit (cfg.gaps) inner outer;
           smartGaps = false;
         };
-        workspaceAutoBackAndForth = true;
+        # Super+cifră de mai multe ori (sau ținut apăsat) rămâne pe același workspace.
+        workspaceAutoBackAndForth = false;
         focus.wrapping = "no";
 
         colors =
@@ -198,21 +199,23 @@ in
               border = accent;
               background = accent;
               text = bg;
-              indicator = accent;
+              # direcția split-ului: aqua din gruvbox, varianta deschisă a accentului
+              indicator = hash theme.scheme.base0C;
               childBorder = accent;
             };
             focusedInactive = {
               border = muted;
               background = bg;
               text = muted;
-              indicator = bg;
+              # fără focus: toate laturile la fel (și cea a split-ului)
+              indicator = hash theme.scheme.base02;
               childBorder = hash theme.scheme.base02;
             };
             unfocused = {
               border = muted;
               background = bg;
               text = muted;
-              indicator = bg;
+              indicator = hash theme.scheme.base02;
               childBorder = hash theme.scheme.base02;
             };
             urgent = {
@@ -301,8 +304,8 @@ in
         }
         // lib.listToAttrs (
           lib.concatMap (ws: [
-            (lib.nameValuePair "${mod}+${wsKey ws}" "workspace number ${ws}")
-            (lib.nameValuePair "${mod}+Shift+${wsKey ws}" "move container to workspace number ${ws}")
+            (lib.nameValuePair "${mod}+${ws}" "workspace number ${ws}")
+            (lib.nameValuePair "${mod}+Shift+${ws}" "move container to workspace number ${ws}")
           ]) workspaces
         );
 
@@ -326,6 +329,10 @@ in
       '';
 
       extraConfig = ''
+        # Workspace 10 (muzica) pe tasta 0, după 1–9 (vezi `workspaces` mai sus)
+        bindsym ${mod}+0 workspace number 10
+        bindsym ${mod}+Shift+0 move container to workspace number 10
+
         # Dialoguri și file picker-e plutitoare
         for_window [window_role="pop-up"] floating enable
         for_window [window_role="dialog"] floating enable
