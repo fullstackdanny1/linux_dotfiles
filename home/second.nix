@@ -31,8 +31,9 @@ in
     notifyOnUnlock = false; # timerul se reia din terminal: `retrack`
     scale = 1.0; # ajustează pentru ecranul laptopului secundar
     gaps = {
-      inner = 10;
-      outer = 4;
+      # sway pune la margine outer + inner: 8 + (-1) = 7 (jumătate din 14)
+      inner = 8;
+      outer = -1;
     };
 
     scripts.swaybar-status = mkScript {
@@ -47,7 +48,7 @@ in
         TIMER_ICON = icons.timer;
         TIMER_COLOR = hash theme.accent;
         LAYOUT_ICON = icons.keyboard;
-        LAYOUT_COLOR = hash theme.muted;
+        LAYOUT_COLOR = hash c.base08;
       };
     };
   };
@@ -57,6 +58,10 @@ in
 
   # ---------------------------------------------------------------- sway
   wayland.windowManager.sway.config = {
+    # Direcția split-ului: latura unde apare următoarea fereastră (dreapta pentru
+    # splith, jos pentru splitv) e într-un verde mai deschis decât bordura.
+    colors.focused.indicator = lib.mkForce (hash c.base0B);
+
     keybindings = {
       "${mod}+x" = "exec ${exe "power-menu"}";
 
@@ -132,7 +137,7 @@ in
         position = 1;
         settings = {
           format_up = "${icon c.base0D icons.wifi} %essid";
-          format_down = "${icon theme.muted icons.wifiOff} off";
+          format_down = "${icon c.base0D icons.wifiOff} off";
         };
       };
       "volume master" = {
@@ -145,7 +150,7 @@ in
       };
       "tztime local" = {
         position = 3;
-        settings.format = "${icon c.base0A icons.clockOutline} %a %d %b  %H:%M";
+        settings.format = "${icon c.base0A icons.clockOutline} %H:%M";
       };
     };
   };
