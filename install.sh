@@ -1,35 +1,30 @@
 #!/usr/bin/env bash
-# n4r77 setup v2.0 — instalare.
+# n4r77 setup v2.1.0 — instalare.
 #
-#   ./install.sh [--distro fedora|debian|arch] [--bar waybar|swaybar] [--only system|home]
+#   ./install.sh [--distro fedora|debian|arch] [--only system|home]
 #
-# Fără --distro / --bar, scriptul întreabă (distribuția e detectată ca sugestie).
+# Fără --distro, scriptul întreabă (distribuția detectată e sugestia implicită).
 #
-#   1. utilitarele de sistem care nu vin din Nix (sway, greetd, pipewire, git, …),
-#      doar dacă lipsesc
+#   1. utilitarele de sistem care nu vin din Nix (sway, swaylock, greetd,
+#      pipewire, git, …), doar dacă lipsesc
 #   2. Nix, dacă lipsește
-#   3. ce nu există în managerul de pachete (swayfx, swaylock-effects, …) e clonat
-#      în ~/src; compilarea o faci manual (vezi mesajul de la final)
-#   4. /etc/greetd/config.toml și /usr/local/bin/sway-session, serviciile
-#   5. configurile din Nix (home-manager)
+#   3. /etc/greetd/config.toml și /usr/local/bin/sway-session, serviciile
+#   4. configurile din Nix (home-manager)
 set -euo pipefail
 
 cd "$(dirname "$(readlink -f "$0")")"
 
 distro=""
-bar=""
 only=""
-src_dir="$HOME/src"
 
 usage() {
-  sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//'
+  sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//'
   exit 1
 }
 
 while [ $# -gt 0 ]; do
   case "$1" in
     --distro) distro="${2:-}"; shift 2 ;;
-    --bar) bar="${2:-}"; shift 2 ;;
     --only) only="${2:-}"; shift 2 ;;
     -h | --help) usage ;;
     *) usage ;;
@@ -76,10 +71,8 @@ choose() {
 }
 
 [ -n "$distro" ] || distro=$(choose "Distribuția:" "$(detect_distro)" fedora debian arch)
-[ -n "$bar" ] || bar=$(choose "Bara:" waybar waybar swaybar)
 
 case "$distro" in fedora | debian | arch) ;; *) warn "distribuție necunoscută: $distro"; usage ;; esac
-case "$bar" in waybar | swaybar) ;; *) warn "bară necunoscută: $bar"; usage ;; esac
 case "$only" in "" | system | home) ;; *) usage ;; esac
 
 # ------------------------------------------------------------------ pachete
@@ -90,8 +83,10 @@ packages=(
   "git|git|git"
   "curl|curl|curl"
   "xz|xz-utils|xz"
-  "sway|sway|swayfx/sway"
+  "sway|sway|sway"
+  "swaylock|swaylock|swaylock"
   "greetd|greetd|greetd"
+  "tuigreet|tuigreet|greetd-tuigreet"
   "pipewire|pipewire|pipewire"
   "wireplumber|wireplumber|wireplumber"
   "pipewire-pulseaudio|pipewire-pulse|pipewire-pulse"
@@ -104,15 +99,6 @@ packages=(
   "xdg-desktop-portal-gtk|xdg-desktop-portal-gtk|xdg-desktop-portal-gtk"
   "podman|podman|podman"
   "distrobox|distrobox|distrobox"
-)
-
-# Ce poate lipsi din managerul de pachete: încearcă pachetul, altfel clonează sursa.
-# Intrare: comanda|pachet fedora|pachet debian|pachet arch|surse fedora/debian|surse arch
-# (pachet „-” = nu există; mai multe surse separate prin spațiu).
-from_source=(
-  "tuigreet|tuigreet|tuigreet|greetd-tuigreet|https://github.com/apognu/tuigreet|https://aur.archlinux.org/greetd-tuigreet.git"
-  "swaylock|-|-|-|https://github.com/jirutka/swaylock-effects|https://aur.archlinux.org/swaylock-effects.git"
-  "swayfx|-|-|swayfx|https://github.com/wlrfx/scenefx https://github.com/WillPower3309/swayfx|https://aur.archlinux.org/swayfx.git"
 )
 
 field() {
@@ -149,7 +135,6 @@ pkg_refresh() {
 }
 
 missing_pkgs=()
-cloned=()
 
 any_installed() {
   local alt
@@ -188,54 +173,6 @@ install_packages() {
       any_installed "$name" || install_alternatives "$name" || missing_pkgs+=("$name")
     done
   fi
-}
-
-clone() {
-  local url="$1" dest
-  dest="$src_dir/$(basename "$url" .git)"
-  mkdir -p "$src_dir"
-  if [ -d "$dest/.git" ]; then
-    echo "  $dest există deja"
-  elif ! git clone "$url" "$dest"; then
-    warn "nu am putut clona $url"
-    return
-  fi
-  cloned+=("$dest")
-}
-
-install_or_clone() {
-  local idx line cmd pkg sources
-  idx=$(distro_index)
-  say "Utilitare care pot lipsi din $distro"
-  for line in "${from_source[@]}"; do
-    cmd=$(field "$line" 1)
-    pkg=$(field "$line" $((idx + 1)))
-    if [ "$distro" = arch ]; then sources=$(field "$line" 6); else sources=$(field "$line" 5); fi
-
-    if [ "$pkg" != "-" ] && pkg_installed "$pkg"; then
-      echo "  $cmd: din $distro ($pkg)"
-      continue
-    fi
-    # swayfx pe arch e deja încercat mai sus (în locul lui sway); nu-l forțăm peste sway
-    if [ "$pkg" != "-" ] && [ "$cmd" != swayfx ] && pkg_install "$pkg"; then
-      echo "  $cmd: din $distro ($pkg)"
-      continue
-    fi
-    # swaylock: doar swaylock-effects înțelege configul (blur, ceas)
-    if [ "$cmd" = swaylock ] && swaylock --help 2>&1 | grep -q -- --effect-blur; then
-      echo "  swaylock-effects: deja instalat"
-      continue
-    fi
-    if [ "$cmd" = swayfx ] && sway --version 2>/dev/null | grep -qi swayfx; then
-      echo "  swayfx: deja instalat"
-      continue
-    fi
-    if [ "$cmd" != swaylock ] && [ "$cmd" != swayfx ] && command -v "$cmd" >/dev/null; then
-      echo "  $cmd: deja instalat"
-      continue
-    fi
-    for url in $sources; do clone "$url"; done
-  done
 }
 
 # ------------------------------------------------------------------ nix
@@ -323,8 +260,8 @@ configure_services() {
 # ------------------------------------------------------------------ home-manager
 
 switch_home() {
-  say "Configurile din Nix (.#n4r77-$bar)"
-  nix_cmd run home-manager/master -- switch -b backup --flake ".#n4r77-$bar"
+  say "Configurile din Nix (.#n4r77)"
+  nix_cmd run home-manager/master -- switch -b backup --flake ".#n4r77"
 
   # Aplicațiile din Nix care folosesc OpenGL/Vulkan au nevoie de driverele GPU
   # expuse în /run/opengl-driver pe distribuții non-NixOS.
@@ -338,39 +275,12 @@ switch_home() {
 
 # ------------------------------------------------------------------ rezumat
 
-build_hint() {
-  if [ "$distro" = arch ] || [ -f "$1/PKGBUILD" ]; then
-    echo "makepkg -si"
-    return
-  fi
-  case "$(basename "$1")" in
-    scenefx | swayfx | swaylock-effects)
-      echo "meson setup build && ninja -C build && sudo ninja -C build install" ;;
-    tuigreet)
-      echo "cargo build --release && sudo install -m755 target/release/tuigreet /usr/local/bin/" ;;
-    *) echo "makepkg -si" ;;
-  esac
-}
-
 summary() {
   echo
-  say "Gata: n4r77 ($distro, $bar)"
+  say "Gata: n4r77 ($distro)"
   if [ ${#missing_pkgs[@]} -gt 0 ]; then
     warn "Nu s-au putut instala din $distro: ${missing_pkgs[*]}"
-  fi
-  if [ ${#cloned[@]} -gt 0 ]; then
-    echo
-    warn "Au fost clonate (de compilat manual, în ordinea de mai jos):"
-    local d
-    for d in "${cloned[@]}"; do
-      printf '    %-40s %s\n' "$d" "$(build_hint "$d")"
-    done
-    case " ${cloned[*]} " in
-      *scenefx*) echo "    swayfx are nevoie de versiunea de scenefx potrivită: vezi README-ul din swayfx (git checkout pe tag-urile corespunzătoare)." ;;
-    esac
-    case " ${cloned[*]} " in
-      *swaylock-effects*) warn "Până compilezi swaylock-effects, lock screen-ul nu funcționează." ;;
-    esac
+    warn "Instalează-le manual, apoi rulează din nou scriptul."
   fi
   echo
   echo "  Containerul de dev (o singură dată):  distrobox create -n dev -i <imagine>"
@@ -382,7 +292,6 @@ summary() {
 if [ "$only" != home ]; then
   install_packages
   install_nix
-  install_or_clone
   install_system_files
   configure_services
 else

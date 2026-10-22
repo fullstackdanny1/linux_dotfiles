@@ -1,6 +1,5 @@
-# Sway: input, keybinds, reguli de ferestre, wallpaper, lock (swaylock-effects),
-# idle, notificări, OSD, capturi, night light, monitoare. Compositorul vine din
-# sistem (sway; swayfx compilat manual merge cu același config).
+# Sway: input, keybinds, reguli de ferestre, wallpaper, lock (swaylock), idle,
+# notificări, OSD, capturi, night light, monitoare. Sway și swaylock vin din sistem.
 {
   config,
   lib,
@@ -23,17 +22,6 @@ let
 in
 {
   options.dotfiles = with lib; {
-    bar = mkOption {
-      type = types.enum [
-        "waybar"
-        "swaybar"
-      ];
-      description = "Bara folosită; o alege scriptul de instalare (--bar).";
-    };
-    radius = mkOption {
-      type = types.int;
-      description = "Raza colțurilor pentru launcher și notificări (0 cu swaybar).";
-    };
     laptopOutput = mkOption {
       type = types.str;
       default = "eDP-1";
@@ -152,7 +140,6 @@ in
       lib.attrValues cfg.scripts
       ++ (with pkgs; [
         libnotify
-        calcurse
         grim
         slurp
         satty
@@ -412,7 +399,7 @@ in
       '';
     };
 
-    programs.fuzzel.settings.border.radius = cfg.radius;
+    programs.fuzzel.settings.border.radius = 0; # colțuri drepte, ca ferestrele
     # ---------------------------------------------------------------- notificări / OSD
     services.mako = {
       enable = true;
@@ -422,7 +409,7 @@ in
         padding = "12";
         width = 360;
         border-size = 2;
-        border-radius = cfg.radius;
+        border-radius = 0;
         default-timeout = 5000;
         layer = "overlay";
         "mode=do-not-disturb" = {
@@ -484,7 +471,7 @@ in
       };
 
     # ---------------------------------------------------------------- lock
-    # swaylock(-effects) e din sistem (PAM); configul vine de aici.
+    # swaylock e din sistem (PAM); configul vine de aici. Fundal: wallpaper-ul.
     xdg.configFile."swaylock/config".text = ''
       ignore-empty-password
       show-failed-attempts
@@ -515,14 +502,6 @@ in
     + lib.optionalString theme.hasWallpaper ''
       image=${theme.wallpaper}
       scaling=fill
-    ''
-    + ''
-      effect-blur=8x3
-      effect-vignette=0.5:0.6
-      clock
-      indicator
-      timestr=%H:%M
-      datestr=%a %d %b
     '';
 
     # ---------------------------------------------------------------- night light, monitoare

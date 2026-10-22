@@ -96,7 +96,7 @@
     };
 
     # Doar ținte alese explicit (fără configuri pentru aplicații nefolosite).
-    # Sway, waybar, helix și lock screen-urile folosesc paleta direct, din theme.nix.
+    # Sway, bara, helix și lock screen-ul folosesc paleta direct, din theme.nix.
     autoEnable = false;
     targets = {
       font-packages.enable = true;

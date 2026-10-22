@@ -1,21 +1,20 @@
-# n4r77 setup v2.0
+# n4r77 setup v2.1.0
 
-Un singur config Sway, declarat cu Nix + home-manager: sway simplu,
-swaylock-effects, două variante de bară (Waybar sau swaybar, alese la
-instalare) și un workflow de programare cu Helix + tmux. Tema vine dintr-o
+Un singur config Sway, declarat cu Nix + home-manager: sway și swaylock (fără
+variantele cu efecte), swaybar + i3status-rust și un workflow de programare cu
+Helix + tmux. Tema vine dintr-o
 singură sursă (Stylix + `home/theme.nix`, Gruvbox dark hard).
 
 ## Structură
 
 ```
-flake.nix         homeConfigurations.n4r77-{waybar,swaybar} + packages.system-files
-install.sh        pachete de sistem, Nix, surse de compilat, /etc, servicii, configurile din Nix
+flake.nix         homeConfigurations.n4r77 + packages.system-files
+install.sh        pachete de sistem, Nix, /etc, servicii, configurile din Nix
 home/
   theme.nix       paleta, accent, font, rază, cursor, wallpaper
   common.nix      pachete, bash + prompt, aliasuri, helix, foot, fuzzel, mpd, syncthing, Stylix
-  sway.nix        sway, swaylock-effects, idle, mako, swayosd, capturi, gammastep, kanshi
-  waybar.nix      bara Waybar (module clickabile)       — `--bar waybar`
-  swaybar.nix     swaybar + i3status (needitabilă)      — `--bar swaybar`
+  sway.nix        sway, swaylock, idle, mako, swayosd, capturi, gammastep, kanshi
+  bar.nix         swaybar + i3status-rust
   dev.nix         tmux, `ts`, setările Helix pentru workflow
   icons.nix       glife Nerd Font
   scripts/*.sh    scripturi (writeShellApplication, verificate cu shellcheck)
@@ -30,40 +29,28 @@ wallpapers/       wallpaper.png
 ```sh
 git clone <repo> ~/linux_dotfiles && cd ~/linux_dotfiles
 # userul e setat în flake.nix (user.name / user.home)
-./install.sh                                   # întreabă distribuția și bara
-./install.sh --distro fedora --bar waybar      # sau direct
+./install.sh                    # întreabă distribuția (o sugerează pe cea detectată)
+./install.sh --distro fedora    # sau direct
 ```
 
-Opțiuni: `--distro fedora|debian|arch`, `--bar waybar|swaybar`,
-`--only system` (fără configurile din Nix) sau `--only home` (doar configurile din Nix).
+Opțiuni: `--distro fedora|debian|arch`, `--only system` (fără configurile din
+Nix) sau `--only home` (doar configurile din Nix).
 
 Ce face, în ordine:
 
-1. **Pachete din sistem**, doar cele care lipsesc: git, curl, xz, sway, greetd,
-   pipewire, wireplumber, iwd, bluez, power-profiles-daemon, lxqt-policykit,
-   portals (wlr, gtk), podman, distrobox. Pe Arch instalează `swayfx` în locul
-   lui `sway` (cu `sway` ca rezervă).
+1. **Pachete din sistem**, doar cele care lipsesc: git, curl, xz, sway,
+   swaylock, greetd, tuigreet, pipewire, wireplumber, iwd, bluez,
+   power-profiles-daemon, lxqt-policykit, portals (wlr, gtk), podman, distrobox.
+   Ce nu se poate instala e listat la final.
 2. **Nix**, dacă lipsește (installer-ul oficial, multi-user).
-3. **Ce nu există în managerul de pachete** e clonat în `~/src`, fără să fie
-   compilat. La final scriptul afișează ce a clonat și comanda de build:
-
-   | | Fedora | Debian | Arch |
-   |---|---|---|---|
-   | swaylock-effects | GitHub | GitHub | AUR |
-   | swayfx (+ scenefx) | GitHub | GitHub | pachet (altfel AUR) |
-   | tuigreet | pachet (altfel GitHub) | pachet (altfel GitHub) | `greetd-tuigreet` |
-
-   Până compilezi swaylock-effects, lock screen-ul nu merge (configul folosește
-   blur și ceas, pe care swaylock simplu nu le înțelege). Configul sway merge și
-   cu swayfx, deci după ce îl instalezi nu trebuie schimbat nimic.
-4. **Fișiere de sistem și servicii**: `/etc/greetd/config.toml`,
+3. **Fișiere de sistem și servicii**: `/etc/greetd/config.toml`,
    `/usr/local/bin/sway-session` (backup `*.orig`), iwd (ca backend pentru
    NetworkManager, dacă există), bluetooth, power-profiles-daemon, greetd ca
    display manager.
-5. **Configurile din Nix**: `home-manager switch --flake .#n4r77-<bară>` și
-   driverele GPU pentru aplicațiile din Nix (`non-nixos-gpu-setup`).
+4. **Configurile din Nix**: `home-manager switch --flake .#n4r77` și driverele
+   GPU pentru aplicațiile din Nix (`non-nixos-gpu-setup`).
 
-După modificări în config: `./install.sh --only home --bar waybar`.
+După modificări în config: `./install.sh --only home`.
 
 ## Aspect
 
@@ -71,9 +58,12 @@ După modificări în config: `./install.sh --only home --bar waybar`.
   (`#504945`); latura unde se deschide următoarea fereastră (direcția split-ului)
   e un gri și mai deschis (`#d5c4a1`).
 - Spațiere: 8 între ferestre, 7 față de marginea ecranului, și cu o singură fereastră.
-- Waybar: bară plutitoare cu colțuri rotunjite; swaybar: transparentă, iconițe
-  colorate separate de `│`. Workspace-ul activ: cifra colorată (cu linie sub ea
-  în Waybar); în Waybar, 1–3 apar mereu.
+- Bara (swaybar + i3status-rust): sus, fundal transparent, workspace-ul activ
+  cu cifra colorată. În dreapta, separate de `│`: timerul (doar când rulează),
+  layout-ul tastaturii, Wi-Fi, volumul, ora. Click pe Wi-Fi / volum deschide
+  impala / wiremix într-un popup; click pe timer arată raportul săptămânii,
+  click dreapta îl oprește.
+- Lock (swaylock): wallpaper-ul ca fundal, inel mare în centru.
 
 ## Taste
 
@@ -220,5 +210,5 @@ kanshi și orele pentru night light (`services.gammastep`).
 ## Wallpaper
 
 `wallpapers/wallpaper.png` (urmărit de git: flake-ul vede doar fișierele din
-git). E folosit de sway și de swaylock (cu blur); fără el se folosește culoarea
-de fundal din paletă.
+git). E folosit de sway și de swaylock; fără el se folosește culoarea de fundal
+din paletă.
