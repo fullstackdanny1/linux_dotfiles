@@ -1,5 +1,5 @@
 #!/bin/sh
-# Pornește sway (sau swayfx) cu profilul Nix + home-manager în mediu, ca sway
+# Pornește sway (sau swayfx, dacă l-ai compilat) cu profilul Nix + home-manager în mediu, ca sway
 # să găsească utilitarele instalate prin Nix. Folosit de greeter (greetd).
 # shellcheck disable=SC1090,SC1091
 

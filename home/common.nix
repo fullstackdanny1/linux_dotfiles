@@ -1,4 +1,4 @@
-# Comun pe ambele laptopuri: pachete, shell + prompt, editor, zellij, terminal, launcher,
+# Comun: pachete, shell + prompt, editor, terminal, launcher,
 # TUI-uri, muzică, time tracking, aliasuri și tema (Stylix).
 {
   config,
@@ -104,7 +104,6 @@
       foot.enable = true;
       fuzzel.enable = true;
       btop.enable = true;
-      zellij.enable = true;
     };
   };
 
@@ -123,7 +122,6 @@
       track = "timer start";
       untrack = "timer stop";
       retrack = "timer continue";
-      zj = "zellij attach --create main";
       off = "session off";
       reboot = "session reboot";
       logout = "session logout";
@@ -259,25 +257,6 @@
   programs.btop = {
     enable = true;
     settings.vim_keys = true;
-  };
-
-  # ---------------------------------------------------------------- multiplexer
-  programs.zellij = {
-    enable = true;
-    # Nu pornește automat în fiecare shell; `zj` când e nevoie.
-    enableBashIntegration = false;
-    settings = {
-      default_layout = "compact";
-      pane_frames = false;
-      simplified_ui = false;
-      show_startup_tips = false;
-      show_release_notes = false;
-      copy_command = "wl-copy";
-      copy_on_select = true;
-      mouse_mode = true;
-      scroll_buffer_size = 10000;
-      ui.pane_frames.rounded_corners = true;
-    };
   };
 
   # ---------------------------------------------------------------- terminal

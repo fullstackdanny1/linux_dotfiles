@@ -1,5 +1,5 @@
 {
-  description = "Sway dotfiles: main (elegant, yet minimal) și second (barebones but with style)";
+  description = "n4r77 setup v2.0: sway, swaylock-effects, waybar sau swaybar, workflow de dev cu helix + tmux";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -30,8 +30,9 @@
         home = "/home/andrew123";
       };
 
+      # Un singur config; diferă doar bara (aleasă de install.sh --bar).
       mkHome =
-        hostModule:
+        bar:
         home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
           extraSpecialArgs = {
@@ -42,28 +43,24 @@
           modules = [
             stylix.homeModules.stylix
             ./home/common.nix
-            ./home/sway-common.nix
-            hostModule
+            ./home/sway.nix
+            ./home/waybar.nix
+            ./home/swaybar.nix
+            ./home/dev.nix
+            { dotfiles.bar = bar; }
           ];
         };
     in
     {
       homeConfigurations = {
-        main = mkHome ./home/main.nix;
-        second = mkHome ./home/second.nix;
+        n4r77-waybar = mkHome "waybar";
+        n4r77-swaybar = mkHome "swaybar";
       };
 
-      # Fișierele de sistem (greetd, greeter, wrapper-ul de sesiune), randate cu
-      # aceeași paletă. Le instalează `./install.sh <host> system`.
+      # Fișierele de sistem (greetd + tuigreet, wrapper-ul de sesiune). Le instalează
+      # `./install.sh`.
       packages.${system} = {
-        system-main = import ./system {
-          inherit pkgs;
-          host = "main";
-        };
-        system-second = import ./system {
-          inherit pkgs;
-          host = "second";
-        };
+        system-files = import ./system { inherit pkgs; };
         default = home-manager.packages.${system}.default;
       };
 
