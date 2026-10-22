@@ -1,5 +1,5 @@
-# Sway comun: input, keybinds, reguli de ferestre, wallpaper, idle-inhibit,
-# scratchpad, muzică, lid. Compositorul vine din sistem (sway / swayfx).
+# Sway: input, keybinds, reguli de ferestre, wallpaper, lock (swaylock), idle,
+# notificări, OSD, capturi, night light, monitoare. Sway și swaylock vin din sistem.
 {
   config,
   lib,
@@ -12,7 +12,9 @@ let
   inherit (import ./lib.nix { inherit pkgs; }) mkScript;
   exe = name: lib.getExe cfg.scripts.${name};
   mod = "Mod4";
-  hash = c: "#${c}";
+  hash = x: "#${x}";
+  c = theme.scheme;
+  osd = lib.getExe' pkgs.swayosd "swayosd-client";
 
   # 1–9 în keybindings; 10 (tasta 0) în extraConfig: home-manager sortează tastele
   # alfabetic, iar sway pornește pe primul workspace din config — altfel ar fi 10.
@@ -20,26 +22,6 @@ let
 in
 {
   options.dotfiles = with lib; {
-    host = mkOption {
-      type = types.enum [
-        "main"
-        "second"
-      ];
-      description = "Ce configurație e activă.";
-    };
-    lockCommand = mkOption {
-      type = types.str;
-      description = "Comanda de lock; trebuie să blocheze până la deblocare.";
-    };
-    lockProcess = mkOption {
-      type = types.str;
-      description = "Numele procesului de lock (gtklock / swaylock).";
-    };
-    notifyOnUnlock = mkOption {
-      type = types.bool;
-      default = false;
-      description = "La deblocare, notificare care oferă reluarea timerului.";
-    };
     laptopOutput = mkOption {
       type = types.str;
       default = "eDP-1";
@@ -53,12 +35,13 @@ in
     gaps = {
       inner = mkOption {
         type = types.int;
-        default = 12;
+        default = 8;
         description = "Spațiul dintre ferestre.";
       };
       outer = mkOption {
         type = types.int;
-        default = 4;
+        # sway pune la margine outer + inner: 8 + (-1) = 7
+        default = -1;
         description = "Spațiul suplimentar față de marginea ecranului.";
       };
     };
@@ -79,9 +62,9 @@ in
           pkgs.libnotify
         ];
         env = {
-          LOCKER = cfg.lockCommand;
-          LOCK_PROCESS = cfg.lockProcess;
-          NOTIFY_ON_UNLOCK = if cfg.notifyOnUnlock then "1" else "0";
+          LOCKER = "swaylock";
+          LOCK_PROCESS = "swaylock";
+          NOTIFY_ON_UNLOCK = "1";
         };
       };
       timer = mkScript {
@@ -117,13 +100,54 @@ in
           cfg.scripts.session
         ];
       };
+      popup = mkScript {
+        name = "popup";
+        runtimeInputs = [
+          pkgs.jq
+          pkgs.foot
+        ];
+      };
+      screenshot = mkScript {
+        name = "screenshot";
+        runtimeInputs = with pkgs; [
+          grim
+          slurp
+          satty
+          jq
+          wl-clipboard
+          libnotify
+        ];
+      };
+      control-center = mkScript {
+        name = "control-center";
+        runtimeInputs = with pkgs; [
+          fuzzel
+          libnotify
+          mako
+          impala
+          bluetui
+          wiremix
+          btop
+          cfg.scripts.popup
+          cfg.scripts.timer
+        ];
+      };
+      idle-suspend = mkScript { name = "idle-suspend"; };
+      polkit-agent = mkScript { name = "polkit-agent"; };
     };
 
-    home.packages = lib.attrValues cfg.scripts;
+    home.packages =
+      lib.attrValues cfg.scripts
+      ++ (with pkgs; [
+        libnotify
+        grim
+        slurp
+        satty
+      ]);
 
     wayland.windowManager.sway = {
       enable = true;
-      package = null; # sway / swayfx din sistem
+      package = null; # sway din sistem
       checkConfig = false;
       # Exportă tot mediul sesiunii (inclusiv PATH cu profilul Nix) către
       # serviciile systemd --user (bară, notificări, idle…).
@@ -188,20 +212,21 @@ in
 
         colors =
           let
-            accent = hash theme.accent;
+            activeBorder = hash "a89984"; # gruvbox gray (fg4)
             bg = hash theme.bg;
             fg = hash theme.fg;
             muted = hash theme.muted;
             red = hash theme.scheme.base08;
           in
           {
+            # Activă: gri deschis; inactive: gri închis. Latura split-ului
+            # (unde se deschide următoarea fereastră) e un gri și mai deschis.
             focused = {
-              border = accent;
-              background = accent;
+              border = activeBorder;
+              background = activeBorder;
               text = bg;
-              # direcția split-ului: aqua din gruvbox, varianta deschisă a accentului
-              indicator = hash theme.scheme.base0C;
-              childBorder = accent;
+              indicator = hash theme.scheme.base05;
+              childBorder = activeBorder;
             };
             focusedInactive = {
               border = muted;
@@ -294,6 +319,25 @@ in
           # muzică (workspace 10)
           "${mod}+m" = "exec ${exe "music"}";
           "${mod}+Shift+x" = "exec ${exe "power-menu"}";
+          "${mod}+x" = "exec ${exe "control-center"}";
+
+          # volum / luminozitate cu OSD, funcționale și pe lock screen
+          "--locked XF86AudioRaiseVolume" = "exec ${osd} --output-volume raise";
+          "--locked XF86AudioLowerVolume" = "exec ${osd} --output-volume lower";
+          "--locked XF86AudioMute" = "exec ${osd} --output-volume mute-toggle";
+          "--locked XF86AudioMicMute" = "exec ${osd} --input-volume mute-toggle";
+          "--locked XF86MonBrightnessUp" = "exec ${osd} --brightness raise";
+          "--locked XF86MonBrightnessDown" = "exec ${osd} --brightness lower";
+          # Caps Lock e pe Shift+Caps (Caps singur = Escape)
+          "--release Caps_Lock" = "exec ${osd} --caps-lock";
+          "--release Shift+Caps_Lock" = "exec ${osd} --caps-lock";
+
+          # capturi de ecran
+          "Print" = "exec ${exe "screenshot"} screen";
+          "Shift+Print" = "exec ${exe "screenshot"} area";
+          "Ctrl+Print" = "exec ${exe "screenshot"} window";
+          "${mod}+Print" = "exec ${exe "screenshot"} annotate";
+          "${mod}+Shift+s" = "exec ${exe "screenshot"} annotate";
 
           # media, funcționale și pe lock screen
           "--locked XF86AudioPlay" = "exec playerctl play-pause";
@@ -308,6 +352,8 @@ in
             (lib.nameValuePair "${mod}+Shift+${ws}" "move container to workspace number ${ws}")
           ]) workspaces
         );
+
+        startup = [ { command = exe "polkit-agent"; } ];
 
         modes.resize = {
           "h" = "resize shrink width 20px";
@@ -345,9 +391,176 @@ in
         # Terminalul din scratchpad
         for_window [app_id="^scratchpad$"] floating enable, resize set width 70 ppt height 60 ppt, move position center, move scratchpad, scratchpad show
 
+        # Terminale popup (din bară / control center): plutitoare, centrate, dimensiune fixă
+        for_window [app_id="^popup-"] floating enable, resize set width 900 px height 560 px, move position center
+
         # Idle inhibat cât o fereastră e pe fullscreen
         for_window [all] inhibit_idle fullscreen
       '';
+    };
+
+    programs.fuzzel.settings.border.radius = 0; # colțuri drepte, ca ferestrele
+    # ---------------------------------------------------------------- notificări / OSD
+    services.mako = {
+      enable = true;
+      settings = {
+        anchor = "top-right";
+        margin = "10";
+        padding = "12";
+        width = 360;
+        border-size = 2;
+        border-radius = 0;
+        default-timeout = 5000;
+        layer = "overlay";
+        "mode=do-not-disturb" = {
+          invisible = 1;
+        };
+        # bateria critică trece și de „nu deranja”
+        "mode=do-not-disturb urgency=critical" = {
+          invisible = 0;
+        };
+      };
+    };
+
+    services.swayosd.enable = true;
+
+    services.batsignal = {
+      enable = true;
+      extraArgs = [
+        "-w"
+        "20"
+        "-c"
+        "10"
+        "-d"
+        "5"
+      ];
+    };
+
+    # ---------------------------------------------------------------- idle
+    services.swayidle =
+      let
+        session = exe "session";
+        brightnessctl = lib.getExe pkgs.brightnessctl;
+      in
+      {
+        enable = true;
+        timeouts = [
+          {
+            timeout = 270; # 4:30 — estompare
+            command = "${brightnessctl} -s set 10%";
+            resumeCommand = "${brightnessctl} -r";
+          }
+          {
+            timeout = 300; # 5:00 — lock
+            command = "${session} lock";
+          }
+          {
+            timeout = 330; # 5:30 — ecran stins
+            command = "swaymsg 'output * power off'";
+            resumeCommand = "swaymsg 'output * power on'";
+          }
+          {
+            timeout = 900; # 15:00 — suspend, doar pe baterie
+            command = exe "idle-suspend";
+          }
+        ];
+        events = {
+          before-sleep = "${session} lock";
+          lock = "${session} lock";
+        };
+      };
+
+    # ---------------------------------------------------------------- lock
+    # swaylock e din sistem (PAM); configul vine de aici. Fundal: wallpaper-ul.
+    xdg.configFile."swaylock/config".text = ''
+      ignore-empty-password
+      show-failed-attempts
+      font=${theme.font.name}
+      indicator-radius=135
+      indicator-thickness=8
+      color=${theme.bg}
+      inside-color=${theme.bg}cc
+      inside-clear-color=${theme.bg}cc
+      inside-ver-color=${theme.bg}cc
+      inside-wrong-color=${theme.bg}cc
+      ring-color=${c.base01}
+      ring-clear-color=${c.base0A}
+      ring-ver-color=${c.base0D}
+      ring-wrong-color=${c.base08}
+      key-hl-color=${theme.accent}
+      bs-hl-color=${c.base08}
+      line-color=00000000
+      line-clear-color=00000000
+      line-ver-color=00000000
+      line-wrong-color=00000000
+      separator-color=00000000
+      text-color=${theme.fg}
+      text-clear-color=${theme.fg}
+      text-ver-color=${theme.fg}
+      text-wrong-color=${c.base08}
+    ''
+    + lib.optionalString theme.hasWallpaper ''
+      image=${theme.wallpaper}
+      scaling=fill
+    '';
+
+    # ---------------------------------------------------------------- night light, monitoare
+    services.gammastep = {
+      enable = true;
+      provider = "manual";
+      dawnTime = "6:30-7:30";
+      duskTime = "19:30-20:30";
+      temperature = {
+        day = 6500;
+        night = 3800;
+      };
+    };
+
+    services.kanshi = {
+      enable = true;
+      settings = [
+        {
+          profile.name = "laptop";
+          profile.outputs = [
+            {
+              criteria = cfg.laptopOutput;
+              status = "enable";
+              inherit (cfg) scale;
+            }
+          ];
+        }
+        {
+          # Ecran extern: laptopul rămâne activ cât capacul e deschis (vezi bindswitch).
+          profile.name = "docked";
+          profile.outputs = [
+            {
+              criteria = cfg.laptopOutput;
+              status = "enable";
+              inherit (cfg) scale;
+            }
+            {
+              criteria = "*";
+              status = "enable";
+            }
+          ];
+        }
+      ];
+    };
+
+    # ---------------------------------------------------------------- portals, GTK
+    xdg.configFile."xdg-desktop-portal/sway-portals.conf".text = ''
+      [preferred]
+      default=gtk
+      org.freedesktop.impl.portal.ScreenCast=wlr
+      org.freedesktop.impl.portal.Screenshot=wlr
+      org.freedesktop.impl.portal.Inhibit=none
+    '';
+
+    # Tema GTK (adw-gtk3 colorat cu paleta) vine din Stylix.
+    gtk.enable = true;
+    stylix.targets = {
+      gtk.enable = true;
+      mako.enable = true;
     };
   };
 }
