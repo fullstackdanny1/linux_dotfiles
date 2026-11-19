@@ -142,14 +142,13 @@ in
           gnused
         ];
       };
-      battery-monitor = mkScript {
-        name = "battery-monitor";
+      battery-bar = mkScript {
+        name = "battery-bar";
         runtimeInputs = with pkgs; [
-          upower
+          coreutils
+          findutils
           libnotify
           systemd
-          gawk
-          gnused
         ];
       };
       bluetooth-status = mkScript {
@@ -293,87 +292,74 @@ colors =
         };
 
         keybindings = {
+          # --- Esențiale: terminal, ferestre, launcher, browser ---
           "${mod}+Return" = "exec foot";
+          "${mod}+q" = "kill";
           "${mod}+d" = "exec fuzzel";
-          "${mod}+Shift+q" = "kill";
-          "${mod}+Shift+c" = "reload";
+          "${mod}+b" = "exec firefox";
+
+          # --- Meniuri și utilitare (după inițială, fără Shift) ---
+          "${mod}+c" = "exec ${exe "control-center"}";
+          "${mod}+p" = "exec ${exe "power-menu"}";
+          "${mod}+m" = "exec ${exe "music"}";
+          "${mod}+t" = "exec ${exe "timer"}";
           "${mod}+Escape" = "exec ${exe "session"} lock";
+
+          # --- Sistem Sway ---
+          "${mod}+Shift+r" = "reload";
           "${mod}+Shift+e" =
             "exec swaynag -t warning -m 'Ieșire din sway?' -Z 'Logout' '${exe "session"} logout'";
-          "${mod}+Shift+f" = "exec firefox";
 
-          # US / RO
-          "${mod}+space" = "input type:keyboard xkb_switch_layout next";
+          # --- Layout și mod fereastră ---
+          "${mod}+e" = "layout toggle split";
+          "${mod}+f" = "fullscreen toggle";
+          "${mod}+v" = "floating toggle";
+          "${mod}+Tab" = "focus mode_toggle";
+          "${mod}+r" = "mode resize";
 
-          # navigare și mutare (hjkl și săgeți)
+          # --- Navigare și mutare (h/j/k/l) ---
           "${mod}+h" = "focus left";
           "${mod}+j" = "focus down";
           "${mod}+k" = "focus up";
           "${mod}+l" = "focus right";
-          "${mod}+Left" = "focus left";
-          "${mod}+Down" = "focus down";
-          "${mod}+Up" = "focus up";
-          "${mod}+Right" = "focus right";
           "${mod}+Shift+h" = "move left";
           "${mod}+Shift+j" = "move down";
           "${mod}+Shift+k" = "move up";
           "${mod}+Shift+l" = "move right";
-          "${mod}+Shift+Left" = "move left";
-          "${mod}+Shift+Down" = "move down";
-          "${mod}+Shift+Up" = "move up";
-          "${mod}+Shift+Right" = "move right";
 
-          # layout
-          "${mod}+b" = "splith";
-          "${mod}+v" = "splitv";
-          "${mod}+s" = "layout stacking";
-          "${mod}+w" = "layout tabbed";
-          "${mod}+e" = "layout toggle split";
-          "${mod}+f" = "fullscreen toggle";
-          "${mod}+Shift+space" = "floating toggle";
-          "${mod}+Tab" = "focus mode_toggle";
-          "${mod}+a" = "focus parent";
-          "${mod}+r" = "mode resize";
-
-          # scratchpad: terminal ascuns + scratchpad-ul obișnuit
+          # --- Scratchpad ---
           "${mod}+grave" = "exec ${exe "scratch-term"}";
           "${mod}+minus" = "scratchpad show";
           "${mod}+Shift+minus" = "move scratchpad";
 
-          # muzică (workspace 10)
-          "${mod}+m" = "exec ${exe "music"}";
-          "${mod}+Shift+x" = "exec ${exe "power-menu"}";
-          "${mod}+x" = "exec ${exe "control-center"}";
+          # --- Popup-uri rapide (Wi-Fi, Bluetooth, Audio) ---
+          "${mod}+Mod1+w" = "exec ${exe "popup"} wifi impala";
+          "${mod}+Mod1+b" = "exec ${exe "popup"} bluetooth bluetui";
+          "${mod}+Mod1+a" = "exec ${exe "popup"} audio pulsemixer";
 
-          # scurtături directe pentru ferestrele TUI plutitoare (Rețea, Bluetooth, Audio)
-          "${mod}+Shift+w" = "exec ${exe "popup"} wifi impala";
-          "${mod}+Shift+b" = "exec ${exe "popup"} bluetooth bluetui";
-          "${mod}+Shift+a" = "exec ${exe "popup"} audio pulsemixer";
+          # --- Tastatură (US / RO) și OSD ---
+          "${mod}+space" = "input type:keyboard xkb_switch_layout next";
+          "--release Caps_Lock" = "exec ${osd} --caps-lock";
+          "--release Shift+Caps_Lock" = "exec ${osd} --caps-lock";
 
-          # volum / luminozitate cu OSD, funcționale și pe lock screen
+          # --- Volum, luminozitate și media (active și pe lock screen) ---
           "--locked XF86AudioRaiseVolume" = "exec ${osd} --output-volume raise";
           "--locked XF86AudioLowerVolume" = "exec ${osd} --output-volume lower";
           "--locked XF86AudioMute" = "exec ${osd} --output-volume mute-toggle";
           "--locked XF86AudioMicMute" = "exec ${osd} --input-volume mute-toggle";
           "--locked XF86MonBrightnessUp" = "exec ${osd} --brightness raise";
           "--locked XF86MonBrightnessDown" = "exec ${osd} --brightness lower";
-          # Caps Lock e pe Shift+Caps (Caps singur = Escape)
-          "--release Caps_Lock" = "exec ${osd} --caps-lock";
-          "--release Shift+Caps_Lock" = "exec ${osd} --caps-lock";
-
-          # capturi de ecran
-          "Print" = "exec ${exe "screenshot"} screen";
-          "Shift+Print" = "exec ${exe "screenshot"} area";
-          "Ctrl+Print" = "exec ${exe "screenshot"} window";
-          "${mod}+Print" = "exec ${exe "screenshot"} annotate";
-          "${mod}+Shift+s" = "exec ${exe "screenshot"} annotate";
-
-          # media, funcționale și pe lock screen
           "--locked XF86AudioPlay" = "exec playerctl play-pause";
           "--locked XF86AudioPause" = "exec playerctl pause";
           "--locked XF86AudioNext" = "exec playerctl next";
           "--locked XF86AudioPrev" = "exec playerctl previous";
           "--locked XF86AudioStop" = "exec playerctl stop";
+
+          # --- Capturi de ecran ---
+          "Print" = "exec ${exe "screenshot"} screen";
+          "Shift+Print" = "exec ${exe "screenshot"} area";
+          "Ctrl+Print" = "exec ${exe "screenshot"} window";
+          "${mod}+Print" = "exec ${exe "screenshot"} annotate";
         }
         // lib.listToAttrs (
           lib.concatMap (ws: [
@@ -476,24 +462,6 @@ colors =
           color: #ebdbb2;
         }
       '';
-    };
-
-    # Monitorizarea automată a bateriei și oprirea de siguranță (înlocuiește batsignal)
-    systemd.user.services.battery-monitor = {
-      Unit = {
-        Description = "Sistem automat de notificări și siguranță baterie";
-        PartOf = [ config.wayland.systemd.target ];
-        After = [ config.wayland.systemd.target ];
-      };
-      Service = {
-        Type = "simple";
-        ExecStart = exe "battery-monitor";
-        Restart = "always";
-        RestartSec = "5s";
-      };
-      Install = {
-        WantedBy = [ config.wayland.systemd.target ];
-      };
     };
 
     # ---------------------------------------------------------------- idle
