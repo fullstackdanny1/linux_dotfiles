@@ -193,8 +193,8 @@ install_nix() {
     say "Nix e deja instalat ($(nix --version))"
     return
   fi
-  say "Instalez Nix (multi-user)"
-  sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install) --daemon --yes
+  say "Instalez Nix (single-user)"
+  sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install) --no-daemon --yes
   load_nix
   command -v nix >/dev/null || {
     warn "nix nu e în PATH după instalare; deschide un shell nou și rulează din nou"

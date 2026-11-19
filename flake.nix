@@ -1,5 +1,5 @@
 {
-  description = "n4r77 setup v2.1.0: sway, swaylock, swaybar + i3status-rust, workflow de dev cu helix + tmux";
+  description = "n4r77 setup v2.2.0: sway, swaylock, swaybar + i3status-rust, workflow de dev cu helix + tmux";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -26,8 +26,8 @@
 
       # Schimbă aici dacă userul diferă pe laptopuri.
       user = {
-        name = "andrew123";
-        home = "/home/andrew123";
+        name = "andrew";
+        home = "/home/andrew";
       };
 
       n4r77 = home-manager.lib.homeManagerConfiguration {
@@ -43,6 +43,7 @@
           ./home/sway.nix
           ./home/bar.nix
           ./home/dev.nix
+          {home.backupFileExtension = "backup"; }
         ];
       };
     in

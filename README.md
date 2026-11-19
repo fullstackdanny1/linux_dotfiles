@@ -1,4 +1,4 @@
-# n4r77 setup v2.1.0
+# n4r77 setup v2.2.0
 
 Un singur config Sway, declarat cu Nix + home-manager: sway și swaylock (fără
 variantele cu efecte), swaybar + i3status-rust și un workflow de programare cu

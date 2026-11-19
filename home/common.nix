@@ -20,6 +20,7 @@
       impala
       bluetui
       wiremix
+      pulsemixer
       # media, luminozitate
       playerctl
       brightnessctl
@@ -297,7 +298,7 @@
         selection-text = lib.mkForce "${theme.accent}ff";
         border = lib.mkForce "${theme.accent}ff";
       };
-      border.width = 2;
+      border.width = 1;
     };
   };
 

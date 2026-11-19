@@ -126,10 +126,36 @@ in
           mako
           impala
           bluetui
+          pulsemixer
           wiremix
           btop
           cfg.scripts.popup
           cfg.scripts.timer
+        ];
+      };
+      battery-status = mkScript {
+        name = "battery-status";
+        runtimeInputs = with pkgs; [
+          upower
+          libnotify
+          gawk
+          gnused
+        ];
+      };
+      battery-monitor = mkScript {
+        name = "battery-monitor";
+        runtimeInputs = with pkgs; [
+          upower
+          libnotify
+          systemd
+          gawk
+          gnused
+        ];
+      };
+      bluetooth-status = mkScript {
+        name = "bluetooth-status";
+        runtimeInputs = with pkgs; [
+          bluez
         ];
       };
       idle-suspend = mkScript { name = "idle-suspend"; };
@@ -193,11 +219,11 @@ in
         seat."*".xcursor_theme = "${theme.cursor.name} ${toString theme.cursor.size}";
 
         window = {
-          border = 2;
+          border = 1;
           titlebar = false;
         };
         floating = {
-          border = 2;
+          border = 1;
           titlebar = false;
           modifier = mod;
         };
@@ -210,17 +236,16 @@ in
         workspaceAutoBackAndForth = false;
         focus.wrapping = "no";
 
-        colors =
+colors =
           let
             activeBorder = hash "a89984"; # gruvbox gray (fg4)
+            inactiveBorder = hash c.base03; # #665c54 — mai vizibil decât base02, dar sub activeBorder
             bg = hash theme.bg;
             fg = hash theme.fg;
             muted = hash theme.muted;
             red = hash theme.scheme.base08;
           in
           {
-            # Activă: gri deschis; inactive: gri închis. Latura split-ului
-            # (unde se deschide următoarea fereastră) e un gri și mai deschis.
             focused = {
               border = activeBorder;
               background = activeBorder;
@@ -229,19 +254,18 @@ in
               childBorder = activeBorder;
             };
             focusedInactive = {
-              border = muted;
+              border = inactiveBorder;
               background = bg;
               text = muted;
-              # fără focus: toate laturile la fel (și cea a split-ului)
-              indicator = hash theme.scheme.base02;
-              childBorder = hash theme.scheme.base02;
+              indicator = inactiveBorder;
+              childBorder = inactiveBorder;
             };
             unfocused = {
-              border = muted;
+              border = inactiveBorder;
               background = bg;
               text = muted;
-              indicator = hash theme.scheme.base02;
-              childBorder = hash theme.scheme.base02;
+              indicator = inactiveBorder;
+              childBorder = inactiveBorder;
             };
             urgent = {
               border = red;
@@ -320,6 +344,11 @@ in
           "${mod}+m" = "exec ${exe "music"}";
           "${mod}+Shift+x" = "exec ${exe "power-menu"}";
           "${mod}+x" = "exec ${exe "control-center"}";
+
+          # scurtături directe pentru ferestrele TUI plutitoare (Rețea, Bluetooth, Audio)
+          "${mod}+Shift+w" = "exec ${exe "popup"} wifi impala";
+          "${mod}+Shift+b" = "exec ${exe "popup"} bluetooth bluetui";
+          "${mod}+Shift+a" = "exec ${exe "popup"} audio pulsemixer";
 
           # volum / luminozitate cu OSD, funcționale și pe lock screen
           "--locked XF86AudioRaiseVolume" = "exec ${osd} --output-volume raise";
@@ -410,6 +439,7 @@ in
         width = 360;
         border-size = 2;
         border-radius = 0;
+        border-color = lib.mkForce (hash theme.accent);
         default-timeout = 5000;
         layer = "overlay";
         "mode=do-not-disturb" = {
@@ -422,18 +452,48 @@ in
       };
     };
 
-    services.swayosd.enable = true;
-
-    services.batsignal = {
+    services.swayosd = {
       enable = true;
-      extraArgs = [
-        "-w"
-        "20"
-        "-c"
-        "10"
-        "-d"
-        "5"
-      ];
+      topMargin = 0.5; # centrat pe ecran
+      stylePath = pkgs.writeText "swayosd-style.css" ''
+        window#osd {
+          background-color: rgba(40, 40, 40, 0.75);
+          border: 1px solid rgba(235, 219, 178, 0.2);
+          border-radius: 0px;
+          padding: 12px;
+          color: #ebdbb2;
+        }
+        progressbar trough {
+          background-color: rgba(255, 255, 255, 0.1);
+          border-radius: 0px;
+          min-height: 8px;
+        }
+        progressbar progress {
+          background-color: #${theme.accent};
+          border-radius: 0px;
+        }
+        image, label {
+          color: #ebdbb2;
+        }
+      '';
+    };
+
+    # Monitorizarea automată a bateriei și oprirea de siguranță (înlocuiește batsignal)
+    systemd.user.services.battery-monitor = {
+      Unit = {
+        Description = "Sistem automat de notificări și siguranță baterie";
+        PartOf = [ config.wayland.systemd.target ];
+        After = [ config.wayland.systemd.target ];
+      };
+      Service = {
+        Type = "simple";
+        ExecStart = exe "battery-monitor";
+        Restart = "always";
+        RestartSec = "5s";
+      };
+      Install = {
+        WantedBy = [ config.wayland.systemd.target ];
+      };
     };
 
     # ---------------------------------------------------------------- idle
