@@ -300,7 +300,7 @@ colors =
 
           # --- Meniuri și utilitare (după inițială, fără Shift) ---
           "${mod}+c" = "exec ${exe "control-center"}";
-          "${mod}+p" = "exec ${exe "power-menu"}";
+          "${mod}+Shift+x" = "exec ${exe "power-menu"}";
           "${mod}+m" = "exec ${exe "music"}";
           "${mod}+t" = "exec ${exe "timer"}";
           "${mod}+Escape" = "exec ${exe "session"} lock";
