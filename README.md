@@ -70,27 +70,31 @@ După modificări în config: `./install.sh --only home`.
 | Tastă | Acțiune |
 |---|---|
 | `Super+Enter` | terminal |
-| `Super+p` | proiect: sesiune tmux cu Helix (vezi „Workflow de programare”) |
+| `Super+q` | închide fereastra |
 | `Super+d` | launcher |
-| `Super+x` | control center (Wi-Fi, bluetooth, audio, energie, night light, nu deranja, timer) |
-| `Super+Shift+x` | meniu power |
-| `Super+Shift+q` | închide fereastra |
-| `Super+Shift+c` | reload |
+| `Super+b` | browser (Firefox) |
+| `Super+c` | control center (Wi-Fi, bluetooth, audio, energie, night light, nu deranja, timer) |
+| `Super+p` | meniu power |
+| `Super+m` | playerul de muzică (workspace 10) |
+| `Super+t` | time tracking |
+| `Super+Shift+p` | proiect: sesiune tmux cu Helix (vezi „Workflow de programare”) |
 | `Super+Escape` | lock |
+| `Super+Shift+r` | reload sway |
 | `Super+Shift+e` | logout (cu confirmare) |
 | `Super+Space` | US ⇄ RO |
-| `Super+h/j/k/l` | focus; cu `Shift` mută fereastra |
-| `Super+1…0` | workspace (apăsat din nou sau ținut apăsat rămâne pe el) |
-| `Super+b` / `Super+v` | split orizontal / vertical |
-| `Super+s` / `Super+w` / `Super+e` | stacking / tabbed / toggle split |
+| `Super+e` | toggle split |
 | `Super+f` | fullscreen |
-| `Super+Shift+Space` / `Super+Tab` | floating / focus tiling ⇄ floating |
+| `Super+v` | floating toggle |
+| `Super+Tab` | focus tiling ⇄ floating |
 | `Super+r` | mod resize (hjkl, Enter/Esc iese) |
+| `Super+h/j/k/l` | focus stânga / jos / sus / dreapta; cu `Shift` mută fereastra |
+| `Super+1…0` | workspace (apăsat din nou sau ținut apăsat rămâne pe el) |
 | ``Super+` `` | terminal ascuns (scratchpad) |
-| `Super+m` | playerul de muzică (workspace 10) |
+| `Super+-` / `Super+Shift+-` | arată scratchpad / mută în scratchpad |
+| `Super+Alt+w/b/a` | popup direct Wi-Fi / Bluetooth / Audio |
 | `Caps` / `Shift+Caps` | Escape / Caps Lock |
 | `Print`, `Shift+Print`, `Ctrl+Print` | captură ecran / zonă / fereastră |
-| `Super+Print`, `Super+Shift+s` | captură zonă cu adnotare (satty) |
+| `Super+Print` | captură zonă cu adnotare (satty) |
 
 Volum, luminozitate și media merg și pe lock screen.
 
@@ -126,7 +130,7 @@ O sesiune tmux per proiect, în stilul „tmux-sessionizer”:
 | 2 | `term` | shell | container (`distrobox enter dev`) |
 
 Orice fereastră nouă (`Ctrl-a c`) intră automat în container. Sesiunea
-supraviețuiește închiderii terminalului: `Super+p` pe același proiect o
+supraviețuiește închiderii terminalului: `Super+Shift+p` pe același proiect o
 redeschide exact cum ai lăsat-o.
 
 Proiectele sunt subdirectoarele din `~/code`; containerul se numește `dev`.
@@ -150,7 +154,7 @@ exportate din container cu `distrobox-export --bin …` (recomandat) sau instala
 
 | Tastă | Acțiune |
 |---|---|
-| `Super+p` | alegi proiectul din fzf; se deschide Helix pe tot ecranul |
+| `Super+Shift+p` | alegi proiectul din fzf; se deschide Helix pe tot ecranul |
 | `Ctrl-a Tab` | comuți între `code` și `term` |
 | `Ctrl-a 1` / `Ctrl-a 2` | direct la fereastra 1 / 2 |
 | `Ctrl-a c` | fereastră nouă (în container) |

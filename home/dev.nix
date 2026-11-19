@@ -1,5 +1,5 @@
 # Workflow de programare: o sesiune tmux per proiect (stil tmux-sessionizer).
-#   Super+P → alegi proiectul (fzf) → fereastra „code” cu Helix pe tot ecranul,
+#   Super+Shift+p → alegi proiectul (fzf) → fereastra „code” cu Helix pe tot ecranul,
 #   fereastra „term” în containerul de dev (distrobox).
 {
   config,
@@ -50,7 +50,7 @@ in
       lazygit
     ];
 
-    wayland.windowManager.sway.config.keybindings."Mod4+p" = "exec foot ${ts}";
+    wayland.windowManager.sway.config.keybindings."Mod4+Shift+p" = "exec foot ${ts}";
 
     programs.tmux = {
       enable = true;
