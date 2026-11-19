@@ -1,4 +1,4 @@
-# n4r77 setup v2.2.0
+# n4r77 setup v2.3.0
 
 Un singur config Sway, declarat cu Nix + home-manager: sway și swaylock (fără
 variantele cu efecte), swaybar + i3status-rust și un workflow de programare cu
@@ -82,7 +82,7 @@ După modificări în config: `./install.sh --only home`.
 | `Super+Shift+r` | reload sway |
 | `Super+Shift+e` | logout (cu confirmare) |
 | `Super+Space` | US ⇄ RO |
-| `Super+e` | toggle split |
+| `Super+e` | split direction toggle (`split toggle`) |
 | `Super+f` | fullscreen |
 | `Super+v` | floating toggle |
 | `Super+Tab` | focus tiling ⇄ floating |
@@ -91,10 +91,10 @@ După modificări în config: `./install.sh --only home`.
 | `Super+1…0` | workspace (apăsat din nou sau ținut apăsat rămâne pe el) |
 | ``Super+` `` | terminal ascuns (scratchpad) |
 | `Super+-` / `Super+Shift+-` | arată scratchpad / mută în scratchpad |
-| `Super+Alt+w/b/a` | popup direct Wi-Fi / Bluetooth / Audio |
-| `Caps` / `Shift+Caps` | Escape / Caps Lock |
+| `Super+w` / `Super+Shift+b` / `Super+a` | popup direct Wi-Fi / Bluetooth / Audio |
 | `Print`, `Shift+Print`, `Ctrl+Print` | captură ecran / zonă / fereastră |
-| `Super+Print` | captură zonă cu adnotare (satty) |
+| `Super+s` / `Super+Print` | captură zonă cu adnotare GUI popup (satty) |
+| `Super+Shift+s` | captură zonă directă în clipboard |
 
 Volum, luminozitate și media merg și pe lock screen.
 

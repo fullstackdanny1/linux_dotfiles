@@ -311,7 +311,7 @@ colors =
             "exec swaynag -t warning -m 'Ieșire din sway?' -Z 'Logout' '${exe "session"} logout'";
 
           # --- Layout și mod fereastră ---
-          "${mod}+e" = "layout toggle split";
+          "${mod}+e" = "split toggle";
           "${mod}+f" = "fullscreen toggle";
           "${mod}+v" = "floating toggle";
           "${mod}+Tab" = "focus mode_toggle";
@@ -333,14 +333,12 @@ colors =
           "${mod}+Shift+minus" = "move scratchpad";
 
           # --- Popup-uri rapide (Wi-Fi, Bluetooth, Audio) ---
-          "${mod}+Mod1+w" = "exec ${exe "popup"} wifi impala";
-          "${mod}+Mod1+b" = "exec ${exe "popup"} bluetooth bluetui";
-          "${mod}+Mod1+a" = "exec ${exe "popup"} audio pulsemixer";
+          "${mod}+w" = "exec ${exe "popup"} wifi impala";
+          "${mod}+Shift+b" = "exec ${exe "popup"} bluetooth bluetui";
+          "${mod}+a" = "exec ${exe "popup"} audio pulsemixer";
 
-          # --- Tastatură (US / RO) și OSD ---
+          # --- Tastatură (US / RO) ---
           "${mod}+space" = "input type:keyboard xkb_switch_layout next";
-          "--release Caps_Lock" = "exec ${osd} --caps-lock";
-          "--release Shift+Caps_Lock" = "exec ${osd} --caps-lock";
 
           # --- Volum, luminozitate și media (active și pe lock screen) ---
           "--locked XF86AudioRaiseVolume" = "exec ${osd} --output-volume raise";
@@ -360,6 +358,8 @@ colors =
           "Shift+Print" = "exec ${exe "screenshot"} area";
           "Ctrl+Print" = "exec ${exe "screenshot"} window";
           "${mod}+Print" = "exec ${exe "screenshot"} annotate";
+          "${mod}+s" = "exec ${exe "screenshot"} annotate";
+          "${mod}+Shift+s" = "exec ${exe "screenshot"} area";
         }
         // lib.listToAttrs (
           lib.concatMap (ws: [
@@ -409,6 +409,9 @@ colors =
         # Terminale popup (din bară / control center): plutitoare, centrate, dimensiune fixă
         for_window [app_id="^popup-"] floating enable, resize set width 900 px height 560 px, move position center
 
+        # Satty (GUI capturi de ecran cu adnotare): fereastră plutitoare centrată (popup)
+        for_window [app_id="org.satty.Satty"] floating enable, move position center, resize set width 960 px height 640 px
+
         # Idle inhibat cât o fereastră e pe fullscreen
         for_window [all] inhibit_idle fullscreen
       '';
@@ -431,7 +434,10 @@ colors =
         "mode=do-not-disturb" = {
           invisible = 1;
         };
-        # bateria critică trece și de „nu deranja”
+        # bateria critică și verificarea manuală a bateriei trec și de „nu deranja”
+        "mode=do-not-disturb app-name=baterie" = {
+          invisible = 0;
+        };
         "mode=do-not-disturb urgency=critical" = {
           invisible = 0;
         };

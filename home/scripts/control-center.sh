@@ -35,11 +35,12 @@ case "$choice" in
   "Nu deranja")
     if makoctl mode | grep -qx do-not-disturb; then
       makoctl mode -r do-not-disturb >/dev/null
+      pkill -SIGRTMIN+1 i3status-rs 2>/dev/null || true
       notify-send --app-name=mako "Nu deranja: oprit"
     else
       notify-send --app-name=mako --expire-time=2000 "Nu deranja: pornit"
-      sleep 2
       makoctl mode -a do-not-disturb >/dev/null
+      pkill -SIGRTMIN+1 i3status-rs 2>/dev/null || true
     fi
     ;;
   "Monitor sistem") popup sysmon btop ;;

@@ -3,10 +3,10 @@
 # și oprire în 30s la <= 6% (anulabilă la conectarea încărcătorului).
 set -euo pipefail
 
-COLOR_GREEN="${BAT_COLOR_GREEN:-b8bb26}"        # >= 60% sau charging/full
-COLOR_LIGHT_GREEN="${BAT_COLOR_LGREEN:-689d6a}"  # 30% - 59%
-COLOR_YELLOW="${BAT_COLOR_YELLOW:-fabd2f}"    # 15% - 29%
-COLOR_RED="${BAT_COLOR_RED:-fb4934}"          # <= 14%
+COLOR_DARK_GREEN="${BAT_COLOR_DARK_GREEN:-689d6a}"   # >= 60% sau charging/full (verde mai închis / accent)
+COLOR_LIGHT_GREEN="${BAT_COLOR_LIGHT_GREEN:-b8bb26}" # 30% - 59% (verde mai deschis / lime)
+COLOR_YELLOW="${BAT_COLOR_YELLOW:-fabd2f}"           # 15% - 29%
+COLOR_RED="${BAT_COLOR_RED:-fb4934}"                 # <= 14%
 
 bat_dir=$(find /sys/class/power_supply -maxdepth 1 -name 'BAT*' 2>/dev/null | head -n1 || true)
 [ -n "$bat_dir" ] || exit 0
@@ -61,7 +61,7 @@ else
 fi
 
 if [ "$status" = "Charging" ] || [ "$status" = "Full" ] || [ "$cap" -ge 60 ]; then
-  color="$COLOR_GREEN"
+  color="$COLOR_DARK_GREEN"
   glyph="󰁹"
 elif [ "$cap" -ge 30 ]; then
   color="$COLOR_LIGHT_GREEN"

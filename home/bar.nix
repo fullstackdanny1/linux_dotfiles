@@ -21,8 +21,8 @@ let
   popup = name: cmd: "${exe "popup"} ${name} ${cmd}";
 
   # Culori Gruvbox dark hard transmise către scriptul extern battery-bar:
-  # verde (base0B) -> verde deschis (theme.accent) -> galben (base0A) -> roșu (base08)
-  batteryEnv = "BAT_COLOR_GREEN='${c.base0B}' BAT_COLOR_LGREEN='${theme.accent}' BAT_COLOR_YELLOW='${c.base0A}' BAT_COLOR_RED='${c.base08}'";
+  # verde închis (theme.accent) -> verde deschis (base0B) -> galben (base0A) -> roșu (base08)
+  batteryEnv = "BAT_COLOR_DARK_GREEN='${theme.accent}' BAT_COLOR_LIGHT_GREEN='${c.base0B}' BAT_COLOR_YELLOW='${c.base0A}' BAT_COLOR_RED='${c.base08}'";
 in
 {
   programs.i3status-rust = {
@@ -37,7 +37,7 @@ in
         {
           block = "custom";
           command = "${exe "timer"} status --plain";
-          interval = 15;
+          interval = 5;
           hide_when_empty = true;
           format = " ${icon theme.accent icons.timer}$text ";
           click = [
@@ -47,7 +47,7 @@ in
             }
             {
               button = "right";
-              cmd = "${exe "timer"} stop";
+              cmd = "${exe "timer"} stop; pkill -SIGRTMIN+1 i3status-rs || true";
               update = true;
             }
           ];
@@ -56,8 +56,9 @@ in
         # --- Nu deranja (vizibil doar când e pornit) ---
         {
           block = "custom";
+          signal = 1;
           command = "makoctl mode | grep -qx 'do-not-disturb' && echo 'on' || true";
-          interval = 5;
+          interval = 1;
           hide_when_empty = true;
           format = " ${icon c.base08 icons.bellOff} $text ";
           click = [
@@ -84,7 +85,7 @@ in
         {
           block = "custom";
           command = "${batteryEnv} ${exe "battery-bar"}";
-          interval = 5;
+          interval = 2;
           hide_when_empty = true;
           format = " $text.pango-str() ";
           click = [
@@ -98,7 +99,7 @@ in
         # --- Ceas & Dată (fără iconiță) ---
         {
           block = "time";
-          interval = 10;
+          interval = 1;
           format = " $timestamp.datetime(f:'%a, %d %b  %H:%M') ";
         }
       ];
