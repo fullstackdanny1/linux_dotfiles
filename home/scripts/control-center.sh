@@ -8,9 +8,10 @@ choice=$(printf '%b\n' \
   "Profil energie\0icon\x1fbattery" \
   "Night light\0icon\x1fweather-clear-night" \
   "Nu deranja\0icon\x1fnotifications-disabled" \
-  "Monitor sistem\0icon\x1futash" \
+  "Monitor sistem\0icon\x1futilities-system-monitor" \
+  "Cheatsheet / Scurtături\0icon\x1fhelp-about" \
   "Time tracking\0icon\x1fappointment-soon" |
-  menu control 8) || exit 0
+  menu control 9) || exit 0
 
 case "$choice" in
   Wi-Fi) popup wifi impala ;;
@@ -44,6 +45,37 @@ case "$choice" in
     fi
     ;;
   "Monitor sistem") popup sysmon btop ;;
+  "Cheatsheet / Scurtături")
+    # Lista este read-only: selectează o scurtătură sau apasă Esc pentru ieșire.
+    printf '%s\n' \
+      'SWAY — Mod = Super' \
+      'Mod+Return  Terminal foot' \
+      'Mod+d  App launcher (Fuzzel)' \
+      'Mod+b  Firefox' \
+      'Mod+c  Control center' \
+      'Mod+p  Power menu' \
+      'Mod+q  Închide fereastra' \
+      'Mod+f  Fullscreen' \
+      'Mod+v  Floating toggle' \
+      'Mod+h/j/k/l  Navigare între ferestre' \
+      'Mod+Shift+h/j/k/l  Mută fereastra' \
+      'Mod+1…0  Workspace 1…10' \
+      'Mod+Shift+1…0  Mută pe workspace 1…10' \
+      'Mod+Print / Mod+s  Captură cu adnotare' \
+      'Mod+Shift+s  Captură zonă' \
+      'Mod+Shift+r  Reîncarcă Sway' \
+      'TMUX' \
+      'Ctrl+a  Prefix tmux' \
+      'Prefix+Tab  Fereastra anterioară' \
+      'Prefix+f  Alege alt proiect' \
+      'Prefix+" / %  Split vertical / orizontal' \
+      'HELIX' \
+      'i / Esc  Insert / Normal' \
+      'y  Copiază în clipboard-ul sistemului' \
+      'p  Lipește din registrul curent' \
+      'Space+R  Reîncarcă toate fișierele' |
+      fuzzel --dmenu --no-icons --prompt 'scurtături ' --lines 20 >/dev/null
+    ;;
   "Time tracking")
     action=$(printf '%b\n' \
       "Pornire\0icon\x1fmedia-playback-start" \

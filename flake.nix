@@ -43,7 +43,8 @@
           ./home/sway.nix
           ./home/bar.nix
           ./home/dev.nix
-          {home.backupFileExtension = "backup"; }
+          ./home/interactive-fixes.nix
+          { home.backupFileExtension = "backup"; }
         ];
       };
     in
