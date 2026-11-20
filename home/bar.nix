@@ -1,5 +1,5 @@
 # Bara: swaybar (din sistem, ca sway) + i3status-rust. Sus, needitabilă, fundal
-# transparent; fiecare modul = iconiță colorată + valoare, separate de „│”.
+# transparent; modulele permanente și compacte sunt separate de „│”.
 {
   config,
   lib,
@@ -13,9 +13,7 @@ let
   c = theme.scheme;
   hash = x: "#${x}";
   transparent = "${hash theme.bg}00";
-  # iconiță colorată (pango)
   icon = color: glyph: "<span color='#${color}'>${glyph}</span>";
-  popup = name: cmd: "${exe "popup"} ${name} ${cmd}";
 in
 {
   programs.i3status-rust = {
@@ -23,11 +21,9 @@ in
     bars.top = {
       settings = {
         icons.icons = "material-nf";
-        # „native”: fără fundal propriu, culorile vin din swaybar și din iconițe
         theme.theme = "native";
       };
       blocks = [
-        # Timer compact: shorthand-ul și timpul curg în status command la fiecare secundă.
         {
           block = "custom";
           command = "${exe "timer"} status --plain";
@@ -59,30 +55,18 @@ in
         {
           block = "net";
           device = "^wl";
-          format = " ${icon c.base0D icons.wifi} $ssid ";
-          inactive_format = " ${icon c.base0D icons.wifiOff} off ";
-          missing_format = " ${icon c.base0D icons.wifiOff} off ";
-          click = [
-            {
-              button = "left";
-              cmd = popup "wifi" "impala";
-            }
-          ];
+          format = " ${icon c.base0D icons.wifi} ";
+          inactive_format = " ${icon c.base08 icons.wifiOff} ";
+          missing_format = " ${icon c.base08 icons.wifiOff} ";
         }
         {
-          block = "sound";
-          format = " ${icon c.base0B "$icon"} $volume.eng(w:2) ";
-          click = [
-            {
-              button = "left";
-              cmd = popup "audio" "wiremix";
-            }
-          ];
+          block = "battery";
+          format = " ${icon c.base0B icons.batFull} $percentage ";
         }
         {
           block = "time";
           interval = 10;
-          format = " ${icon c.base0A icons.clockOutline} $timestamp.datetime(f:'%H:%M') ";
+          format = " ${icon c.base0A icons.clockOutline} $timestamp.datetime(f:'%a, %d %b %H:%M') ";
         }
       ];
     };
@@ -92,7 +76,7 @@ in
     {
       position = "top";
       statusCommand = "${lib.getExe config.programs.i3status-rust.package} ${config.xdg.configHome}/i3status-rust/config-top.toml";
-      command = "swaybar"; # cel din sistem, ca sway
+      command = "swaybar";
       fonts = {
         names = [ theme.font.name ];
         size = theme.font.size + 0.0;
