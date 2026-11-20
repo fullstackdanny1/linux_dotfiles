@@ -208,7 +208,7 @@
         multiplier = 3.0;
       };
       url = {
-        launch = "xdg-open \\${url}";
+        launch = "xdg-open \${url}";
         osc8-underline = "always";
       };
       tweak.font-monospace-warn = "no";
