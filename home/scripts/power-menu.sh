@@ -1,5 +1,4 @@
-# Meniu de power în launcher. Folosim glyph-uri din Nerd Font în locul iconițelor
-# tematice, ca Fuzzel să nu caute fiecare iconiță prin tema Papirus la pornire.
+# Meniu de power în launcher, fără lookup-uri de iconițe tematice.
 choice=$(printf '%s\n' \
   '󰌾  Lock' \
   '󰍃  Logout' \
