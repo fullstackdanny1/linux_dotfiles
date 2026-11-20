@@ -64,10 +64,12 @@ in
       extraConfig = ''
         set -g renumber-windows on
         set -g set-clipboard on
+        set -s copy-command "wl-copy"
         set -g focus-events on
 
         # Truecolor și undercurl pentru diagnosticele Helix
         set -as terminal-features ",foot*:RGB,foot*:usstyle"
+        set -as terminal-overrides ",foot*:Tc"
         # Shift+Enter și alte taste extinse în agenții CLI
         set -s extended-keys on
 
@@ -110,7 +112,15 @@ in
         true-color = true; # forțează truecolor în tmux
         bufferline = "multiple"; # taburi când ai 2+ fișiere deschise
       };
-      keys.normal.space.R = ":reload-all"; # reîncarcă fișierele modificate de agent
+      keys = {
+        normal = {
+          y = [ "yank" ":clipboard-yank" ];
+          space.R = ":reload-all"; # reîncarcă fișierele modificate de agent
+        };
+        select = {
+          y = [ "yank" ":clipboard-yank" ];
+        };
+      };
     };
   };
 }

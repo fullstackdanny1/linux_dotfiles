@@ -129,6 +129,7 @@ in
           pulsemixer
           wiremix
           btop
+          less
           cfg.scripts.popup
           cfg.scripts.timer
         ];
@@ -408,8 +409,11 @@ colors =
 
         # Terminale popup (din bară / control center): plutitoare, centrate, dimensiune fixă
         for_window [app_id="^popup-"] floating enable, resize set width 900 px height 560 px, move position center
+        for_window [app_id="^popup-sysmon$"] floating enable, resize set width 80 ppt height 80 ppt, move position center
+        for_window [app_id="^popup-cheatsheet$"] floating enable, resize set width 80 ppt height 80 ppt, move position center
 
         # Satty (GUI capturi de ecran cu adnotare): fereastră plutitoare centrată (popup)
+        for_window [app_id="com.gabm.satty"] floating enable, move position center, resize set width 960 px height 640 px
         for_window [app_id="org.satty.Satty"] floating enable, move position center, resize set width 960 px height 640 px
 
         # Idle inhibat cât o fereastră e pe fullscreen

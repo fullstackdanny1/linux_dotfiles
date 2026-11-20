@@ -225,19 +225,15 @@
     # Gruvbox dark hard (aceeași paletă) cu fundal transparent.
     themes.dotfiles = {
       inherits = "gruvbox_dark_hard";
-      "ui.background" = {
-        bg = "none";
-      };
+      "ui.background" = { };
       "ui.virtual.whitespace" = {
         fg = "#${theme.scheme.base01}";
       };
       "ui.linenr" = {
         fg = "#7c6f64";
-        bg = "none";
       };
       "ui.linenr.selected" = {
         fg = "#${theme.accent}";
-        bg = "none";
         modifiers = [ "bold" ];
       };
       "ui.statusline" = {
@@ -264,7 +260,10 @@
   programs.foot = {
     enable = true;
     settings = {
-      main.pad = "20x20";
+      main = {
+        pad = "20x20";
+        selection-target = "clipboard";
+      };
       cursor = {
         style = "block";
         blink = "no";
@@ -289,16 +288,22 @@
         prompt = ''"❯ "'';
         terminal = "foot";
         lines = 10;
-        width = 30;
-        horizontal-pad = 20;
-        vertical-pad = 15;
-        inner-pad = 8;
+        width = 36;
+        horizontal-pad = 24;
+        vertical-pad = 16;
+        inner-pad = 10;
+        line-height = 22;
       };
       colors = {
-        selection-text = lib.mkForce "${theme.accent}ff";
+        selection = "${theme.scheme.base02}ff";
+        selection-text = "${theme.scheme.base07}ff";
+        selection-match = "${theme.scheme.base0A}ff";
         border = lib.mkForce "${theme.accent}ff";
       };
-      border.width = 1;
+      border = {
+        width = 2;
+        selection-radius = 0;
+      };
     };
   };
 
