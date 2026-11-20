@@ -26,8 +26,8 @@
 
       # Schimbă aici dacă userul diferă pe laptopuri.
       user = {
-        name = "andrew123";
-        home = "/home/andrew123";
+        name = "andrew";
+        home = "/home/andrew";
       };
 
       n4r77 = home-manager.lib.homeManagerConfiguration {

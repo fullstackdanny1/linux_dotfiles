@@ -115,8 +115,8 @@
     '';
   };
 
-  # Prompt pe două rânduri cu user, host, director, Git și timpul comenzii,
-  # în stilul terminalului anterior.
+  # Prompt pe două rânduri cu iconițe: utilizator, host, director, branch și
+  # durata comenzilor lungi. Săgeata devine roșie după o comandă eșuată.
   programs.starship = {
     enable = true;
     enableBashIntegration = true;
