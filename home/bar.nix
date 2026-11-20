@@ -1,9 +1,5 @@
 # Bara: swaybar (din sistem, ca sway) + i3status-rust. Sus, needitabilă, fundal
-# negru (#1d2021); butoanele de workspace folosesc același fundal cu bara,
-# fără bordură vizibilă.
-#
-# Ordine dreapta (strict dreapta -> stânga):
-# Ceas & Dată | Baterie | Limbă | Nu deranja (când e activ) | Timer (când rulează)
+# transparent; fiecare modul = iconiță colorată + valoare, separate de „│”.
 {
   config,
   lib,
@@ -16,13 +12,10 @@ let
   exe = name: lib.getExe cfg.scripts.${name};
   c = theme.scheme;
   hash = x: "#${x}";
-  barBg = hash theme.bg;
+  transparent = "${hash theme.bg}00";
+  # iconiță colorată (pango)
   icon = color: glyph: "<span color='#${color}'>${glyph}</span>";
   popup = name: cmd: "${exe "popup"} ${name} ${cmd}";
-
-  # Culori Gruvbox dark hard transmise către scriptul extern battery-bar:
-  # verde închis (theme.accent) -> verde deschis (base0B) -> galben (base0A) -> roșu (base08)
-  batteryEnv = "BAT_COLOR_DARK_GREEN='${theme.accent}' BAT_COLOR_LIGHT_GREEN='${c.base0B}' BAT_COLOR_YELLOW='${c.base0A}' BAT_COLOR_RED='${c.base08}'";
 in
 {
   programs.i3status-rust = {
@@ -30,20 +23,22 @@ in
     bars.top = {
       settings = {
         icons.icons = "material-nf";
+        # „native”: fără fundal propriu, culorile vin din swaybar și din iconițe
         theme.theme = "native";
       };
       blocks = [
-        # --- Time tracker compact (vizibil doar când rulează) ---
+        # Timer compact: shorthand-ul și timpul curg în status command la fiecare secundă.
         {
           block = "custom";
           command = "${exe "timer"} status --plain";
-          interval = 5;
+          interval = 1;
           hide_when_empty = true;
-          format = " ${icon theme.accent icons.timer}$text ";
+          format = " ${icon theme.accent icons.timer} $text ";
           click = [
             {
               button = "left";
-              cmd = popup "timer" "${exe "timer"} report";
+              cmd = "${exe "timer"} details";
+              update = true;
             }
             {
               button = "right";
@@ -52,55 +47,42 @@ in
             }
           ];
         }
-
-        # --- Nu deranja (vizibil doar când e pornit) ---
-        {
-          block = "custom";
-          signal = 1;
-          command = "makoctl mode | grep -qx 'do-not-disturb' && echo 'on' || true";
-          interval = 1;
-          hide_when_empty = true;
-          format = " ${icon c.base08 icons.bellOff} $text ";
-          click = [
-            {
-              button = "left";
-              cmd = "makoctl mode -r do-not-disturb";
-              update = true;
-            }
-          ];
-        }
-
-        # --- Indicator Limbă (fără iconiță) ---
         {
           block = "keyboard_layout";
           driver = "sway";
-          format = " $layout ";
+          format = " ${icon c.base08 icons.keyboard} $layout ";
           mappings = {
             "English (US)" = "US";
             "Romanian (standard)" = "RO";
           };
         }
-
-        # --- Baterie (script separat: 4 culori + notificări + auto-poweroff la 6%) ---
         {
-          block = "custom";
-          command = "${batteryEnv} ${exe "battery-bar"}";
-          interval = 2;
-          hide_when_empty = true;
-          format = " $text.pango-str() ";
+          block = "net";
+          device = "^wl";
+          format = " ${icon c.base0D icons.wifi} $ssid ";
+          inactive_format = " ${icon c.base0D icons.wifiOff} off ";
+          missing_format = " ${icon c.base0D icons.wifiOff} off ";
           click = [
             {
               button = "left";
-              cmd = exe "battery-status";
+              cmd = popup "wifi" "impala";
             }
           ];
         }
-
-        # --- Ceas & Dată (fără iconiță) ---
+        {
+          block = "sound";
+          format = " ${icon c.base0B "$icon"} $volume.eng(w:2) ";
+          click = [
+            {
+              button = "left";
+              cmd = popup "audio" "wiremix";
+            }
+          ];
+        }
         {
           block = "time";
-          interval = 1;
-          format = " $timestamp.datetime(f:'%a, %d %b  %H:%M') ";
+          interval = 10;
+          format = " ${icon c.base0A icons.clockOutline} $timestamp.datetime(f:'%H:%M') ";
         }
       ];
     };
@@ -117,34 +99,33 @@ in
       };
       trayOutput = "none";
       extraConfig = ''
-        status_padding 5
-        status_edge_padding 3
-        separator_symbol ""
-        workspace_buttons yes
+        status_padding 4
+        status_edge_padding 12
+        separator_symbol "│"
       '';
       colors = {
-        background = barBg;
+        background = transparent;
         statusline = hash theme.fg;
-        separator = barBg;
+        separator = hash c.base02;
         focusedWorkspace = {
-          border = barBg;
-          background = barBg;
+          border = transparent;
+          background = transparent;
           text = hash theme.accent;
         };
         activeWorkspace = {
-          border = barBg;
-          background = barBg;
+          border = transparent;
+          background = transparent;
           text = hash theme.fg;
         };
         inactiveWorkspace = {
-          border = barBg;
-          background = barBg;
+          border = transparent;
+          background = transparent;
           text = hash theme.muted;
         };
         urgentWorkspace = {
-          border = hash c.base08;
-          background = hash c.base08;
-          text = hash theme.fg;
+          border = transparent;
+          background = transparent;
+          text = hash c.base08;
         };
         bindingMode = {
           border = hash c.base0A;
