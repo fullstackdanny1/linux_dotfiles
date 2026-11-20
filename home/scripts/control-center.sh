@@ -1,6 +1,4 @@
 # Control center în launcher: aceleași acțiuni ca bara, plus restul.
-# --no-icons evită lookup-ul asincron al iconițelor tematice; glyph-urile sunt
-# randate direct de JetBrainsMono Nerd Font.
 menu() { fuzzel --dmenu --no-icons --prompt "$1 " --lines "${2:-10}"; }
 
 choice=$(printf '%s\n' \
@@ -54,35 +52,30 @@ case "$choice" in
     ;;
   '󰍹  Monitor sistem') popup sysmon btop ;;
   '󰌌  Cheatsheet / Scurtături')
-    # Lista este read-only: selectează o scurtătură sau apasă Esc pentru ieșire.
-    printf '%s\n' \
-      'SWAY — Mod = Super' \
-      'Mod+Return  Terminal foot' \
-      'Mod+d  App launcher (Fuzzel)' \
-      'Mod+b  Firefox' \
-      'Mod+c  Control center' \
-      'Mod+p  Power menu' \
-      'Mod+q  Închide fereastra' \
-      'Mod+f  Fullscreen' \
-      'Mod+v  Floating toggle' \
-      'Mod+h/j/k/l  Navigare între ferestre' \
-      'Mod+Shift+h/j/k/l  Mută fereastra' \
-      'Mod+1…0  Workspace 1…10' \
-      'Mod+Shift+1…0  Mută pe workspace 1…10' \
-      'Mod+Print / Mod+s  Captură cu adnotare' \
-      'Mod+Shift+s  Captură zonă' \
-      'Mod+Shift+r  Reîncarcă Sway' \
-      'TMUX' \
-      'Ctrl+a  Prefix tmux' \
-      'Prefix+Tab  Fereastra anterioară' \
-      'Prefix+f  Alege alt proiect' \
-      'Prefix+" / %  Split vertical / orizontal' \
-      'HELIX' \
-      'i / Esc  Insert / Normal' \
-      'y  Copiază în clipboard-ul sistemului' \
-      'p  Lipește din registrul curent' \
-      'Space+R  Reîncarcă toate fișierele' |
-      fuzzel --dmenu --no-icons --prompt 'scurtături ' --lines 20 >/dev/null
+    printf '%-26s →   %-34s   %s\n' \
+      'Mod+Return' 'Terminal foot' '[sway]' \
+      'Mod+d' 'App launcher Fuzzel' '[sway]' \
+      'Mod+c' 'Control center' '[sway]' \
+      'Mod+p' 'Power menu' '[sway]' \
+      'Mod+q' 'Închide fereastra' '[sway]' \
+      'Mod+f' 'Fullscreen' '[sway]' \
+      'Mod+v' 'Floating toggle' '[sway]' \
+      'Mod+h/j/k/l' 'Navigare' '[sway]' \
+      'Mod+Shift+h/j/k/l' 'Mută fereastra' '[sway]' \
+      'Mod+1…0' 'Workspace 1…10' '[sway]' \
+      'Mod+Shift+1…0' 'Mută pe workspace' '[sway]' \
+      'Mod+Print / Mod+s' 'Captură cu adnotare' '[sway]' \
+      'Mod+Shift+s' 'Captură zonă' '[sway]' \
+      'Mod+Shift+r' 'Reîncarcă Sway' '[sway]' \
+      'Ctrl+a Tab' 'Comută ferestrele' '[tmux]' \
+      'Ctrl+a f' 'Alege alt proiect' '[tmux]' \
+      'Ctrl+a " / %' 'Split vertical / orizontal' '[tmux]' \
+      'Ctrl+a r' 'Reîncarcă tmux' '[tmux]' \
+      'i / Esc' 'Insert / Normal' '[helix]' \
+      'y' 'Copie în clipboard' '[helix]' \
+      'p' 'Lipește' '[helix]' \
+      'Space R' 'Reîncarcă fișierele' '[helix]' |
+      fuzzel --dmenu --no-icons --prompt '' --placeholder 'type to search' --lines 18 --width 78 --horizontal-pad 24 --vertical-pad 18 --inner-pad 12 --line-height 26 >/dev/null
     ;;
   '󰔛  Time tracking')
     action=$(printf '%s\n' \

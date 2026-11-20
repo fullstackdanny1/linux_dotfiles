@@ -16,16 +16,13 @@
     stateVersion = "26.05";
 
     packages = with pkgs; [
-      # rețea, bluetooth, audio
       impala
       bluetui
       wiremix
       pulsemixer
-      # media, luminozitate
       playerctl
       brightnessctl
       rmpc
-      # utilitare
       swaybg
       jq
       timewarrior
@@ -35,12 +32,9 @@
     sessionVariables = {
       EDITOR = "hx";
       VISUAL = "hx";
-      # Baza de date timewarrior stă în folderul sincronizat (vezi services.syncthing).
       TIMEWARRIORDB = "${config.home.homeDirectory}/Sync/timewarrior";
     };
 
-    # timewarrior întreabă interactiv la prima rulare dacă nu există baza de date;
-    # o creăm aici ca să meargă și din bară / lock.
     activation.timewarriorDb = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       run mkdir -p "${config.home.homeDirectory}/Sync/timewarrior/data"
       run touch "${config.home.homeDirectory}/Sync/timewarrior/timewarrior.cfg"
@@ -48,13 +42,10 @@
   };
 
   programs.home-manager.enable = true;
-
-  # Distribuție non-NixOS: XDG_DATA_DIRS, drivere GPU pentru aplicațiile din Nix etc.
   targets.genericLinux.enable = true;
   fonts.fontconfig.enable = true;
   xdg.enable = true;
 
-  # ---------------------------------------------------------------- tema
   stylix = {
     enable = true;
     base16Scheme = theme.scheme;
@@ -92,12 +83,10 @@
     };
 
     opacity = {
-      terminal = theme.terminalOpacity; # doar fundalul, textul rămâne opac
+      terminal = theme.terminalOpacity;
       popups = 0.95;
     };
 
-    # Doar ținte alese explicit (fără configuri pentru aplicații nefolosite).
-    # Sway, bara, helix și lock screen-ul folosesc paleta direct, din theme.nix.
     autoEnable = false;
     targets = {
       font-packages.enable = true;
@@ -108,13 +97,9 @@
     };
   };
 
-  # ---------------------------------------------------------------- shell
   programs.bash = {
     enable = true;
-    historyControl = [
-      "ignoredups"
-      "erasedups"
-    ];
+    historyControl = [ "ignoredups" "erasedups" ];
     shellAliases = {
       wifi = "impala";
       bt = "bluetui";
@@ -129,16 +114,12 @@
       lock = "session lock";
     };
     initExtra = ''
-      # `sleep` fără argumente suspendă; cu argumente rămâne comanda obișnuită.
       sleep() {
         if [ $# -eq 0 ]; then session suspend; else command sleep "$@"; fi
       }
     '';
   };
 
-  # Prompt pe două rânduri, cu săgeată îndoită:
-  #   ╭─  andrew 󰌢 laptop  󰉋 ~/linux_dotfiles   main 󰔛 3s
-  #   ╰─❯
   programs.starship = {
     enable = true;
     enableBashIntegration = true;
@@ -150,7 +131,7 @@
       {
         add_newline = true;
         format = lib.concatStrings [
-          "[╭─](${frame}) "
+          "[╭─]( ${frame}) "
           "$username"
           "$hostname"
           "$directory"
@@ -160,54 +141,14 @@
           "$nix_shell"
           "$cmd_duration"
           "$line_break"
-          "[╰─](${frame})"
+          "[╰─]( ${frame})"
           "$character"
         ];
-        username = {
-          show_always = true;
-          format = "[${icons.user} $user]($style) ";
-          style_user = "bold fg:#${theme.accent}";
-          style_root = "bold fg:#${c.base08}";
-        };
-        hostname = {
-          ssh_only = false;
-          format = "[${icons.laptop} $hostname]($style)  ";
-          style = "fg:#${theme.muted}";
-        };
-        directory = {
-          format = "[${icons.folder} $path]($style)[$read_only]($read_only_style) ";
-          style = "bold fg:#${c.base0D}";
-          truncation_length = 3;
-          truncation_symbol = "…/";
-          read_only = " ${icons.lock}";
-        };
-        git_branch = {
-          format = " [${icons.gitBranch} $branch]($style) ";
-          style = "fg:#${c.base0E}";
-        };
-        git_status = {
-          format = "([$all_status$ahead_behind]($style) )";
-          style = "fg:#${c.base0A}";
-        };
-        nix_shell = {
-          format = "[${icons.nix} $name]($style) ";
-          style = "fg:#${c.base0C}";
-        };
-        cmd_duration = {
-          min_time = 2000;
-          format = "[${icons.timer} $duration]($style) ";
-          style = "fg:#${theme.muted}";
-        };
-        character = {
-          success_symbol = "[❯](bold fg:#${theme.accent})";
-          error_symbol = "[❯](bold fg:#${c.base08})";
-        };
       };
   };
 
   programs.git.enable = true;
 
-  # ---------------------------------------------------------------- editoare
   programs.helix = {
     enable = true;
     settings = {
@@ -222,16 +163,11 @@
         };
       };
     };
-    # Gruvbox dark hard (aceeași paletă) cu fundal transparent.
     themes.dotfiles = {
       inherits = "gruvbox_dark_hard";
       "ui.background" = { };
-      "ui.virtual.whitespace" = {
-        fg = "#${theme.scheme.base01}";
-      };
-      "ui.linenr" = {
-        fg = "#7c6f64";
-      };
+      "ui.virtual.whitespace" = { fg = "#${theme.scheme.base01}"; };
+      "ui.linenr" = { fg = "#7c6f64"; };
       "ui.linenr.selected" = {
         fg = "#${theme.accent}";
         modifiers = [ "bold" ];
@@ -256,7 +192,6 @@
     settings.vim_keys = true;
   };
 
-  # ---------------------------------------------------------------- terminal
   programs.foot = {
     enable = true;
     settings = {
@@ -280,7 +215,6 @@
     };
   };
 
-  # ---------------------------------------------------------------- launcher
   programs.fuzzel = {
     enable = true;
     settings = {
@@ -293,21 +227,21 @@
         vertical-pad = 16;
         inner-pad = 10;
         line-height = 22;
+        exit-on-keyboard-focus-loss = "no";
       };
       colors = {
-        selection = "${theme.scheme.base02}ff";
-        selection-text = "${theme.scheme.base07}ff";
-        selection-match = "${theme.scheme.base0A}ff";
+        selection = lib.mkForce "${theme.scheme.base02}ff";
+        selection-text = lib.mkForce "${theme.scheme.base07}ff";
+        selection-match = lib.mkForce "${theme.scheme.base0A}ff";
         border = lib.mkForce "${theme.accent}ff";
       };
       border = {
-        width = 2;
-        selection-radius = 0;
+        width = 1;
+        radius = 0;
       };
     };
   };
 
-  # ---------------------------------------------------------------- muzică
   services.mpd = {
     enable = true;
     musicDirectory = "${config.home.homeDirectory}/Music";
@@ -318,10 +252,6 @@
       }
     '';
   };
-  services.mpd-mpris.enable = true; # tastele media / playerctl / bara
-
-  # ---------------------------------------------------------------- sincronizare
-  # Folderul ~/Sync (cu baza timewarrior) se partajează între laptopuri din
-  # interfața syncthing: http://127.0.0.1:8384
+  services.mpd-mpris.enable = true;
   services.syncthing.enable = true;
 }
