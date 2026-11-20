@@ -208,7 +208,7 @@
         multiplier = 3.0;
       };
       url = {
-        launch = "xdg-open \${url}";
+        launch = "xdg-open \\${url}";
         osc8-underline = "always";
       };
       tweak.font-monospace-warn = "no";
@@ -229,12 +229,8 @@
         line-height = 22;
         exit-on-keyboard-focus-loss = "no";
       };
-      colors = {
-        selection = lib.mkForce "${theme.scheme.base02}ff";
-        selection-text = lib.mkForce "${theme.scheme.base07}ff";
-        selection-match = lib.mkForce "${theme.scheme.base0A}ff";
-        border = lib.mkForce "${theme.accent}ff";
-      };
+      # Fuzzel colors are defined in interactive-fixes.nix so the accent-color
+      # overrides have a single source and don't conflict with these defaults.
       border = {
         width = 1;
         radius = 0;
