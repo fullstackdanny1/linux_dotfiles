@@ -1,39 +1,47 @@
 # Control center în launcher: aceleași acțiuni ca bara, plus restul.
-menu() { fuzzel --dmenu --prompt "$1 " --lines "${2:-10}"; }
+# --no-icons evită lookup-ul asincron al iconițelor tematice; glyph-urile sunt
+# randate direct de JetBrainsMono Nerd Font.
+menu() { fuzzel --dmenu --no-icons --prompt "$1 " --lines "${2:-10}"; }
 
-choice=$(printf '%b\n' \
-  "Wi-Fi\0icon\x1fnetwork-wireless" \
-  "Bluetooth\0icon\x1fbluetooth" \
-  "Audio\0icon\x1faudio-volume-high" \
-  "Profil energie\0icon\x1fbattery" \
-  "Night light\0icon\x1fweather-clear-night" \
-  "Nu deranja\0icon\x1fnotifications-disabled" \
-  "Monitor sistem\0icon\x1futilities-system-monitor" \
-  "Cheatsheet / Scurtături\0icon\x1fhelp-about" \
-  "Time tracking\0icon\x1fappointment-soon" |
+choice=$(printf '%s\n' \
+  '󰖩  Wi-Fi' \
+  '󰂯  Bluetooth' \
+  '󰕾  Audio' \
+  '󰁹  Profil energie' \
+  '󰖔  Night light' \
+  '󰂛  Nu deranja' \
+  '󰍹  Monitor sistem' \
+  '󰌌  Cheatsheet / Scurtături' \
+  '󰔛  Time tracking' |
   menu control 9) || exit 0
 
 case "$choice" in
-  Wi-Fi) popup wifi impala ;;
-  Bluetooth) popup bluetooth bluetui ;;
-  Audio) popup audio pulsemixer ;;
-  "Profil energie")
+  '󰖩  Wi-Fi') popup wifi impala ;;
+  '󰂯  Bluetooth') popup bluetooth bluetui ;;
+  '󰕾  Audio') popup audio pulsemixer ;;
+  '󰁹  Profil energie')
     current=$(powerprofilesctl get)
-    profile=$(printf '%b\n' \
-      "power-saver\0icon\x1fbattery-low" \
-      "balanced\0icon\x1fbattery" \
-      "performance\0icon\x1findicator-cpufreq" |
+    profile=$(printf '%s\n' \
+      '󰁺  power-saver' \
+      '󰁹  balanced' \
+      '󰓅  performance' |
       menu "profil ($current)" 3) || exit 0
+    case "$profile" in
+      '󰁺  power-saver') profile=power-saver ;;
+      '󰁹  balanced') profile=balanced ;;
+      '󰓅  performance') profile=performance ;;
+      *) exit 0 ;;
+    esac
     powerprofilesctl set "$profile" && notify-send --app-name=power "Profil energie: $profile"
     ;;
-  "Night light")
+  '󰖔  Night light')
     if systemctl --user is-active --quiet gammastep; then
       systemctl --user stop gammastep && notify-send --app-name=gammastep "Night light oprit"
     else
       systemctl --user start gammastep && notify-send --app-name=gammastep "Night light pornit"
     fi
     ;;
-  "Nu deranja")
+  '󰂛  Nu deranja')
     if makoctl mode | grep -qx do-not-disturb; then
       makoctl mode -r do-not-disturb >/dev/null
       pkill -SIGRTMIN+1 i3status-rs 2>/dev/null || true
@@ -44,8 +52,8 @@ case "$choice" in
       pkill -SIGRTMIN+1 i3status-rs 2>/dev/null || true
     fi
     ;;
-  "Monitor sistem") popup sysmon btop ;;
-  "Cheatsheet / Scurtături")
+  '󰍹  Monitor sistem') popup sysmon btop ;;
+  '󰌌  Cheatsheet / Scurtături')
     # Lista este read-only: selectează o scurtătură sau apasă Esc pentru ieșire.
     printf '%s\n' \
       'SWAY — Mod = Super' \
@@ -76,18 +84,18 @@ case "$choice" in
       'Space+R  Reîncarcă toate fișierele' |
       fuzzel --dmenu --no-icons --prompt 'scurtături ' --lines 20 >/dev/null
     ;;
-  "Time tracking")
-    action=$(printf '%b\n' \
-      "Pornire\0icon\x1fmedia-playback-start" \
-      "Oprire\0icon\x1fmedia-playback-stop" \
-      "Continuare\0icon\x1fmedia-playback-start" \
-      "Raport\0icon\x1fx-office-document" |
+  '󰔛  Time tracking')
+    action=$(printf '%s\n' \
+      '󰐊  Pornire' \
+      '󰓛  Oprire' \
+      '󰐊  Continuare' \
+      '󰉹  Raport' |
       menu timer 4) || exit 0
     case "$action" in
-      Pornire) timer pick ;;
-      Oprire) timer stop ;;
-      Continuare) timer continue ;;
-      Raport) popup timer timer report ;;
+      '󰐊  Pornire') timer pick ;;
+      '󰓛  Oprire') timer stop ;;
+      '󰐊  Continuare') timer continue ;;
+      '󰉹  Raport') popup timer timer report ;;
     esac
     ;;
 esac
