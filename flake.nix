@@ -26,8 +26,8 @@
 
       # Schimbă aici dacă userul diferă pe laptopuri.
       user = {
-        name = "andrew";
-        home = "/home/andrew";
+        name = "andrew123";
+        home = "/home/andrew123";
       };
 
       n4r77 = home-manager.lib.homeManagerConfiguration {
@@ -44,7 +44,6 @@
           ./home/bar.nix
           ./home/dev.nix
           ./home/interactive-fixes.nix
-          { home.backupFileExtension = "backup"; }
         ];
       };
     in

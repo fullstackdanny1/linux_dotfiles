@@ -2,10 +2,9 @@
 # într-un singur modul de aplicație.
 { lib, theme, ... }:
 {
-  # Suprascrie promptul provenit de la Stylix/configurarea comună; șirul trebuie să
-  # conțină doar glyph-ul, nu ghilimele literale.
+  # Etichetă pentru launcherul principal; meniurile specifice păstrează prompturile lor.
   programs.fuzzel.settings.main = {
-    prompt = lib.mkForce "❯ ";
+    prompt = lib.mkForce "apps ";
     icon-theme = lib.mkForce "Papirus-Dark";
   };
   programs.fuzzel.settings.colors = {
@@ -33,8 +32,8 @@
     set -as terminal-features ",foot*:clipboard"
   '';
 
-  # Regulă Satty cerută explicit și dimensiuni mari doar pentru ferestrele
-  # de monitorizare/cheatsheet; popup-urile mici rămân neschimbate.
+  # Regulă Satty cerută explicit și dimensiuni mari doar pentru monitor/cheatsheet;
+  # păstrăm geometria generală a popup-urilor.
   wayland.windowManager.sway.extraConfig = ''
     for_window [app_id="(?i)satty"] floating enable, move position center, resize set width 960 px height 640 px
     for_window [app_id="^popup-sysmon$"] floating enable, resize set width 80 ppt height 80 ppt, move position center

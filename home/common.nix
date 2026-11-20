@@ -50,7 +50,6 @@
     enable = true;
     base16Scheme = theme.scheme;
     polarity = "dark";
-
     fonts = rec {
       monospace = {
         package = pkgs.nerd-fonts.jetbrains-mono;
@@ -69,24 +68,20 @@
         desktop = theme.font.size;
       };
     };
-
     cursor = {
       package = pkgs.bibata-cursors;
       inherit (theme.cursor) name size;
     };
-
     icons = {
       enable = true;
       package = pkgs.papirus-icon-theme;
       dark = "Papirus-Dark";
       light = "Papirus-Light";
     };
-
     opacity = {
       terminal = theme.terminalOpacity;
       popups = 0.95;
     };
-
     autoEnable = false;
     targets = {
       font-packages.enable = true;
@@ -120,6 +115,8 @@
     '';
   };
 
+  # Prompt pe două rânduri cu user, host, director, Git și timpul comenzii,
+  # în stilul terminalului anterior.
   programs.starship = {
     enable = true;
     enableBashIntegration = true;
@@ -131,7 +128,7 @@
       {
         add_newline = true;
         format = lib.concatStrings [
-          "[╭─]( ${frame}) "
+          "[╭─](${frame}) "
           "$username"
           "$hostname"
           "$directory"
@@ -141,9 +138,48 @@
           "$nix_shell"
           "$cmd_duration"
           "$line_break"
-          "[╰─]( ${frame})"
+          "[╰─](${frame})"
           "$character"
         ];
+        username = {
+          show_always = true;
+          format = "[${icons.user} $user]($style) ";
+          style_user = "bold fg:#${theme.accent}";
+          style_root = "bold fg:#${c.base08}";
+        };
+        hostname = {
+          ssh_only = false;
+          format = "[${icons.laptop} $hostname]($style)  ";
+          style = "fg:#${theme.muted}";
+        };
+        directory = {
+          format = "[${icons.folder} $path]($style)[$read_only]($read_only_style) ";
+          style = "bold fg:#${c.base0D}";
+          truncation_length = 3;
+          truncation_symbol = "…/";
+          read_only = " ${icons.lock}";
+        };
+        git_branch = {
+          format = " [${icons.gitBranch} $branch]($style) ";
+          style = "fg:#${c.base0E}";
+        };
+        git_status = {
+          format = "([$all_status$ahead_behind]($style) )";
+          style = "fg:#${c.base0A}";
+        };
+        nix_shell = {
+          format = "[${icons.nix} $name]($style) ";
+          style = "fg:#${c.base0C}";
+        };
+        cmd_duration = {
+          min_time = 2000;
+          format = "[${icons.timer} $duration]($style) ";
+          style = "fg:#${theme.muted}";
+        };
+        character = {
+          success_symbol = "[❯](bold fg:#${theme.accent})";
+          error_symbol = "[❯](bold fg:#${c.base08})";
+        };
       };
   };
 
@@ -229,8 +265,6 @@
         line-height = 22;
         exit-on-keyboard-focus-loss = "no";
       };
-      # Fuzzel colors are defined in interactive-fixes.nix so the accent-color
-      # overrides have a single source and don't conflict with these defaults.
       border = {
         width = 1;
         radius = 0;
